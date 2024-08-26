@@ -1,0 +1,180 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+model Administrateur {
+  id            String       @id @default(cuid())
+  entreprise_id String
+  entreprise    Entreprise   @relation(fields: [entreprise_id], references: [id])
+  nom           String
+  prenom        String
+  email         String       @unique
+  password      String
+  role          String
+  refreshTokens RefreshToken[]
+}
+
+model Technicien {
+  id            String       @id @default(cuid())
+  entreprise_id String
+  entreprise    Entreprise   @relation(fields: [entreprise_id], references: [id])
+  zone_id       String
+  zone          Zone         @relation(fields: [zone_id], references: [id])
+  nom           String
+  prenom        String
+  email         String       @unique
+  password      String
+  interventions Intervention[]
+  plannings     Planning[]
+  refreshTokens RefreshToken[]
+}
+
+model Client {
+  id            String       @id @default(cuid())
+  nom           String
+  prenom        String
+  email         String       @unique
+  password      String
+  ville         String
+  code_postal   String
+  adresse       String
+  interventions Intervention[]
+  cycles        Cycle[]
+  refreshTokens RefreshToken[]
+}
+
+model Cycle {
+  id            String       @id @default(cuid())
+  modele        String
+  description   String
+  client_id     String
+  client        Client       @relation(fields: [client_id], references: [id])
+}
+
+model Intervention {
+  id            String       @id @default(cuid())
+  forfait_id    String
+  forfait       Forfait      @relation(fields: [forfait_id], references: [id])
+  client_id     String
+  client        Client       @relation(fields: [client_id], references: [id])
+  zone_id       String
+  zone          Zone         @relation(fields: [zone_id], references: [id])
+  technicien_id String
+  technicien    Technicien   @relation(fields: [technicien_id], references: [id])
+  date          DateTime
+  adresse       String
+  detail        String
+  statut        String
+  produits      Produit_Intervention[]
+  commentaires  Commentaire[]
+  photos        Photo[]
+}
+
+model Produit {
+  id            String       @id @default(cuid())
+  nom           String
+  prix          Float
+  description   String
+  quantite      Int
+  interventions Produit_Intervention[]
+}
+
+model Produit_Intervention {
+  id              String       @id @default(cuid())
+  produit_id      String
+  produit         Produit      @relation(fields: [produit_id], references: [id])
+  intervention_id String
+  intervention    Intervention @relation(fields: [intervention_id], references: [id])
+  quantite        Int
+}
+
+model Commentaire {
+  id              String       @id @default(cuid())
+  intervention_id String
+  intervention    Intervention @relation(fields: [intervention_id], references: [id])
+  contenu         String
+  date            DateTime
+}
+
+model Photo {
+  id              String       @id @default(cuid())
+  intervention_id String
+  intervention    Intervention @relation(fields: [intervention_id], references: [id])
+  url             String
+}
+
+model Forfait {
+  id              String       @id @default(cuid())
+  nom             String
+  prix            Float
+  description     String
+  type            String
+  categorie_velo  String
+  interventions   Intervention[]
+  model_id        String
+  model           Modele       @relation(fields: [model_id], references: [id])
+}
+
+model Modele {
+  id              String       @id @default(cuid())
+  nom             String
+  duree           Int
+  forfaits        Forfait[]
+  planning        Model_Planning[]
+}
+
+model Planning {
+  id              String       @id @default(cuid())
+  technicien_id   String
+  technicien      Technicien   @relation(fields: [technicien_id], references: [id])
+  semaine         Int
+  modeles         Model_Planning[]
+}
+
+model Model_Planning {
+  id              String       @id @default(cuid())
+  model_id        String
+  model           Modele       @relation(fields: [model_id], references: [id])
+  planning_id     String
+  planning        Planning     @relation(fields: [planning_id], references: [id])
+}
+
+model Zone {
+  id              String       @id @default(cuid())
+  nom             String
+  polygone        Json
+  interventions   Intervention[]
+  techniciens     Technicien[]
+}
+
+model Entreprise {
+  id              String        @id @default(cuid())
+  nom             String
+  adresse         String
+  sous_domaine    String
+  logo            String
+  couleur_principale String
+  administrateurs Administrateur[]
+  techniciens     Technicien[]
+}
+model RefreshToken {
+  id            String        @id @default(cuid())
+  token         String        @unique
+  expiresAt     DateTime
+  administrateurId String?    // Relation optionnelle vers Administrateur
+  administrateur  Administrateur? @relation(fields: [administrateurId], references: [id])
+  technicienId   String?      // Relation optionnelle vers Technicien
+  technicien     Technicien?  @relation(fields: [technicienId], references: [id])
+  clientId      String?       // Relation optionnelle vers Client
+  client        Client?       @relation(fields: [clientId], references: [id])
+}
