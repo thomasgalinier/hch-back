@@ -28,12 +28,13 @@ model Technicien {
   id            String       @id @default(cuid())
   entreprise_id String
   entreprise    Entreprise   @relation(fields: [entreprise_id], references: [id])
-  zone_id       String
-  zone          Zone         @relation(fields: [zone_id], references: [id])
+  zone_id       String?
+  zone          Zone?        @relation(fields: [zone_id], references: [id])
   nom           String
   prenom        String
   email         String       @unique
   password      String
+  telephone     String
   interventions Intervention[]
   plannings     Planning[]
   refreshTokens RefreshToken[]
@@ -46,7 +47,8 @@ model Client {
   email         String       @unique
   password      String
   ville         String
-  code_postal   String
+  telephone     String
+  code_postal   Int
   adresse       String
   interventions Intervention[]
   cycles        Cycle[]
