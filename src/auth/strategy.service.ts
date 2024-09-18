@@ -20,11 +20,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: Payload) {
-    const client = await this.prismaService.client.findUnique({ where: { id: payload.sub } });
-    const admin = await this.prismaService.administrateur.findUnique({ where: { id: payload.sub } });
-    const technicien = await this.prismaService.technicien.findUnique({ where: { id: payload.sub } });
+    const utilisateur = await this.prismaService.utilisateur.findUnique({ where: { id: payload.sub } });
 
-    const user = client || admin || technicien;
+
+    const user = utilisateur;
 
     if (!user) {
       throw new Error('User not found');
