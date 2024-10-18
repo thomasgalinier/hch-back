@@ -28,7 +28,6 @@ export class AuthService {
       }
     })
     const payload = {email: newClient.email, sub: newClient.id};
-
     const token = this.jwtService.sign(payload, { expiresIn: "1d", secret: this.configService.get('SECRET_KEY')});
     return {
       token,
@@ -76,5 +75,15 @@ export class AuthService {
     if(!isAdmin) throw new UnauthorizedException('Vous n\'êtes pas autorisé à accéder à cette ressource');
     const id = request.params.id;
     return this.prisamService.utilisateur.delete({where: {id}});
+  }
+
+  update(request: Request) {
+    const user = request.user;
+    // @ts-ignore
+    const isAdmin = user.role === 'ADMIN' || user.role === 'SUPER_ADMIN';
+    if(!isAdmin) throw new UnauthorizedException('Vous n\'êtes pas autorisé à accéder à cette ressource');
+    const id = request.params.id;
+    console.log(request);
+    return this.prisamService.utilisateur.update({where: {id}, data: request.body});
   }
 }

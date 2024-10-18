@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Post, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Post, Put, Req, UseGuards } from "@nestjs/common";
 import { SignupDto } from "./dto/signupDto";
 import { AuthService } from "./auth.service";
 import { SigninDto } from "./dto/signinDto";
@@ -28,6 +28,11 @@ export class AuthController {
   @Delete("delete/:id")
   delete(@Req() request: Request) {
     return this.authService.delete(request);
+  }
+  @UseGuards(AuthGuard('jwt'))
+  @Put("update/:id")
+  update(@Req() request: Request) {
+    return this.authService.update(request);
   }
   @UseGuards(AuthGuard('jwt'))
   @Get("me")
