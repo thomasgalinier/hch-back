@@ -1,6 +1,6 @@
-import { IsNotEmpty, IsEmail } from "class-validator";
+import { IsNotEmpty, IsEmail, IsOptional } from "class-validator";
 
-export class TechnicienSignupDto {
+export class SignupDto {
   @IsNotEmpty()
   readonly nom: string
   @IsNotEmpty()
@@ -11,7 +11,6 @@ export class TechnicienSignupDto {
   readonly password: string
   @IsNotEmpty()
   readonly telephone: string
-  readonly entreprise_id: string
-  userId: string
-
-}
+  @IsNotEmpty()
+  readonly role: "SUPER_ADMIN" | "ADMIN" | "TECHNICIEN" | "CLIENT"
+  }
