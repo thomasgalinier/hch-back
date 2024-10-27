@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Put, Req } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Post, Put, Req } from "@nestjs/common";
 import { CarteService } from "./carte.service";
 import { CreateZoneDto } from "./dto/createZoneDto";
 import { Request } from "express";
@@ -11,13 +11,16 @@ export class CarteController {
   getCarte(@Req() request: Request) {
     return this.carteService.getCarte(request)
   }
-  @Post('/createZone')
+  @Post('create')
   createZone(@Body() createZoneDto: CreateZoneDto) {
     return this.carteService.createZone(createZoneDto)
   }
-  @Put('/updateZone/:id')
+  @Put('update/:id')
   updateZone(@Req() request: Request) {
     return this.carteService.updataZone(request)
   }
-
+  @Delete('delete/:id')
+  deleteZone(@Req() request: Request) {
+    return this.carteService.deleteZone(request)
+  }
 }

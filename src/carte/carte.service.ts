@@ -30,4 +30,11 @@ export class CarteService {
       data: request.body
     });
   }
+
+  deleteZone(request:Request) {
+    const id = request.params.id;
+    return this.prismaService.zone.delete({
+      where: {id}
+  });
+  }
 }
