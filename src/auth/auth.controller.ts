@@ -39,4 +39,9 @@ export class AuthController {
   getMe(@Req() request: Request){
     return request.user;
   }
+  @UseGuards(AuthGuard('jwt'))
+  @Get("technicien")
+  getTechnicien(@Req() request: Request){
+    return this.authService.getTechnicien(request);
+  }
 }

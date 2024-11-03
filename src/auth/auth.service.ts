@@ -86,4 +86,12 @@ export class AuthService {
     console.log(request);
     return this.prisamService.utilisateur.update({where: {id}, data: request.body});
   }
+
+  getTechnicien(request: Request) {
+    const user = request.user;
+    // @ts-ignore
+    const isAdmin = user.role === 'ADMIN' || user.role === 'SUPER_ADMIN';
+    if(!isAdmin) throw new UnauthorizedException('Vous n\'êtes pas autorisé à accéder à cette ressource');
+    return this.prisamService.utilisateur.findMany({where: {role: 'TECHNICIEN'}});
+  }
 }

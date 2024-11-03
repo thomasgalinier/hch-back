@@ -7,4 +7,6 @@ export class  CreateZoneDto {
   readonly polygone: [[number,number]]
   @IsOptional()
   readonly idTechnicien: string | null
+  @IsNotEmpty()
+  readonly color: string
 }

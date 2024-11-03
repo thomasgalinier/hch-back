@@ -133,6 +133,7 @@ model Zone {
   id            String         @id @default(cuid())
   nom           String
   polygone      Json
+  color         String
   interventions Intervention[]
   id_technicien String?
   techniciens   Utilisateur[]

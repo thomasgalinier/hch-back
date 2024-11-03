@@ -13,12 +13,13 @@ export class CarteService {
   }
 
   createZone(createZoneDto: CreateZoneDto) {
-    const {nom, polygone, idTechnicien} = createZoneDto;
+    const {nom, polygone, idTechnicien, color} = createZoneDto;
     return this.prismaService.zone.create({
       data: {
         nom,
         polygone,
-        id_technicien: idTechnicien
+        id_technicien: idTechnicien,
+        color
       }
     });
   }
