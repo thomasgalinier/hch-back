@@ -28,7 +28,7 @@ export class CarteService {
     const id = request.params.id;
     return this.prismaService.zone.update({
       where: {id},
-      data: request.body
+      data: request.body.zone
     });
   }
 

@@ -37,6 +37,7 @@ export class AuthController {
   @UseGuards(AuthGuard('jwt'))
   @Get("me")
   getMe(@Req() request: Request){
+    // @ts-ignore
     return request.user;
   }
   @UseGuards(AuthGuard('jwt'))

@@ -61,6 +61,7 @@ export class AuthService {
   }
 
   getAll(request: Request ) {
+    // @ts-ignore
     const user = request.user;
     // @ts-ignore
     const isAdmin = user.role === 'ADMIN' || user.role === 'SUPER_ADMIN';
@@ -69,6 +70,7 @@ export class AuthService {
   }
 
   delete(request: Request) {
+    // @ts-ignore
     const user = request.user;
     // @ts-ignore
     const isAdmin = user.role === 'ADMIN' || user.role === 'SUPER_ADMIN';
@@ -78,6 +80,7 @@ export class AuthService {
   }
 
   update(request: Request) {
+    // @ts-ignore
     const user = request.user;
     // @ts-ignore
     const isAdmin = user.role === 'ADMIN' || user.role === 'SUPER_ADMIN';
@@ -88,6 +91,7 @@ export class AuthService {
   }
 
   getTechnicien(request: Request) {
+    // @ts-ignore
     const user = request.user;
     // @ts-ignore
     const isAdmin = user.role === 'ADMIN' || user.role === 'SUPER_ADMIN';
