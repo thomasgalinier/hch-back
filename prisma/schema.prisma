@@ -30,12 +30,14 @@ model Utilisateur {
   plannings               Planning[]
   zones                   Zone[]
 }
+
 enum Role {
   SUPER_ADMIN
   ADMIN
   TECHNICIEN
   CLIENT
 }
+
 model Entreprise {
   id                 String        @id @default(cuid())
   nom                String
@@ -45,6 +47,7 @@ model Entreprise {
   couleur_principale String
   utilisateurs       Utilisateur[]
 }
+
 model Intervention {
   id        String      @id @default(cuid())
   debut     DateTime
@@ -66,6 +69,7 @@ model Intervention {
   zone_id String
   zone    Zone   @relation(fields: [zone_id], references: [id])
 }
+
 model Commentaire {
   id              String       @id @default(cuid())
   id_technicien   String
@@ -75,12 +79,14 @@ model Commentaire {
   technicien      Utilisateur  @relation(fields: [id_technicien], references: [id])
   intervention    Intervention @relation(fields: [id_intervention], references: [id])
 }
+
 model Photo {
   id              String       @id @default(cuid())
   id_intervention String
   url             String
   intervention    Intervention @relation(fields: [id_intervention], references: [id])
 }
+
 model Produit {
   id            String                 @id @default(cuid())
   nom           String
@@ -89,6 +95,7 @@ model Produit {
   prix          Float
   interventions Produit_Intervention[]
 }
+
 model Produit_Intervention {
   id              String       @id @default(cuid())
   id_produit      String
@@ -97,6 +104,7 @@ model Produit_Intervention {
   produit         Produit      @relation(fields: [id_produit], references: [id])
   intervention    Intervention @relation(fields: [id_intervention], references: [id])
 }
+
 model Forfait {
   id             String         @id @default(cuid())
   nom            String
@@ -108,6 +116,7 @@ model Forfait {
   model_id       String
   model          Modele         @relation(fields: [model_id], references: [id])
 }
+
 model Modele {
   id              String           @id @default(cuid())
   nom             String
@@ -115,13 +124,15 @@ model Modele {
   forfaits        Forfait[]
   model_plannings Model_Planning[]
 }
+
 model Planning {
   id             String           @id @default(cuid())
   id_technicien  String
-  semaine        Int
+  debut          Int
   technicien     Utilisateur      @relation(fields: [id_technicien], references: [id])
   model_planning Model_Planning[]
 }
+
 model Model_Planning {
   id          String   @id @default(cuid())
   id_model    String
@@ -129,6 +140,7 @@ model Model_Planning {
   model       Modele   @relation(fields: [id_model], references: [id])
   planning    Planning @relation(fields: [id_planning], references: [id])
 }
+
 model Zone {
   id            String         @id @default(cuid())
   nom           String
