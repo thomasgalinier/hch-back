@@ -128,7 +128,8 @@ model Modele {
 model Planning {
   id             String           @id @default(cuid())
   id_technicien  String
-  debut          Int
+  id_model       String
+  dateTime       DateTime
   technicien     Utilisateur      @relation(fields: [id_technicien], references: [id])
   model_planning Model_Planning[]
 }

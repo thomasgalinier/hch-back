@@ -1,17 +1,24 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req } from '@nestjs/common';
 import { PlaningService } from './planing.service';
 import { ModelDto } from '../model/dto/modelDto';
+import { PlanningDto } from './dto/PlanningDto';
+import { Request } from 'express';
 
-@Controller('planing')
+
+@Controller('planning')
 export class PlaningController {
   constructor(private readonly planingService: PlaningService) {
   }
   @Get('/')
-  getPlaning() {
+  getPlanning() {
     return this.planingService.getPlaning()
   }
+  @Get('/technicien/:id')
+  getPlanningByTechnicien(@Req() request: Request) {
+    return this.planingService.getPlaningByTechnicien(request)
+  }
   @Post('/create')
-  createPlaning() {
-    return this.planingService.createPlaning()
+  createPlanning(@Body() createPlanningDto: PlanningDto) {
+    return this.planingService.createPlaning(createPlanningDto)
   }
 }
