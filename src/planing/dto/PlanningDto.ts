@@ -6,5 +6,7 @@ export class PlanningDto {
   @IsNotEmpty()
   readonly id_model: string;
   @IsNotEmpty()
-  readonly dateTime: Date
+  readonly debut: Date;
+  @IsNotEmpty()
+  readonly fin: Date;
 }

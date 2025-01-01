@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Post, Put, Req } from '@nestjs/common';
 import { PlaningService } from './planing.service';
 import { ModelDto } from '../model/dto/modelDto';
 import { PlanningDto } from './dto/PlanningDto';
@@ -17,8 +17,16 @@ export class PlaningController {
   getPlanningByTechnicien(@Req() request: Request) {
     return this.planingService.getPlaningByTechnicien(request)
   }
+  @Put('/update/:id')
+  updatePlanning(@Req() request: Request) {
+    return this.planingService.updatePlanning(request)
+  }
   @Post('/create')
   createPlanning(@Body() createPlanningDto: PlanningDto) {
     return this.planingService.createPlaning(createPlanningDto)
+  }
+  @Delete('delete/:id')
+  deletePlanning(@Req() request: Request) {
+    return this.planingService.deletePlanning(request)
   }
 }
