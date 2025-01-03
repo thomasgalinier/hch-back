@@ -1,12 +1,18 @@
-import { IsNotEmpty, IsOptional } from "class-validator";
+import { IsNotEmpty, IsOptional } from 'class-validator';
 
-export class  CreateZoneDto {
+export class CreateZoneDto {
   @IsNotEmpty()
-  readonly nom: string
+  readonly nom: string;
+
   @IsNotEmpty()
-  readonly polygone: [[number,number]]
+  readonly polygone: {
+    type: string;
+    coordinates: [ [number, number] ][]; // On spécifie un tableau de tableaux de coordonnées
+  };
+
   @IsOptional()
-  readonly idTechnicien: string | null
+  readonly idTechnicien: string | null;
+
   @IsNotEmpty()
-  readonly color: string
+  readonly color: string;
 }

@@ -11,14 +11,17 @@ export class CarteController {
   getCarte(@Req() request: Request) {
     return this.carteService.getCarte(request)
   }
+
   @Post('create')
   createZone(@Body() createZoneDto: CreateZoneDto) {
     return this.carteService.createZone(createZoneDto)
   }
+
   @Put('update/:id')
   updateZone(@Req() request: Request) {
     return this.carteService.updataZone(request)
   }
+
   @Delete('delete/:id')
   deleteZone(@Req() request: Request) {
     return this.carteService.deleteZone(request)

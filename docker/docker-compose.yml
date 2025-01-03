@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   db:
-    image: postgres:13  # Image officielle PostgreSQL (version 13 dans cet exemple)
+    image: postgis/postgis:13-3.3-alpine
     container_name: postgres_container
     environment:
       POSTGRES_USER: admin  # Nom d'utilisateur de PostgreSQL
