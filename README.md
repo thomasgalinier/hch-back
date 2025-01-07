@@ -4,7 +4,19 @@ npm install
 
 ```bash
 cd docker && docker-compose up -d
-cd .. && npm run dev
+cd .. 
+touch .env
+```
+copier coller ce contenue dans le .env
+```text
+DATABASE_URL="postgresql://admin:admin@localhost:5432/hch?schema=public"
+SECRET_KEY= "SECRET_KEY"
+```
+```bash
+npx prisma migrate dev
+```
+```bash
+npm run dev
 ```
 crée un super admin
 ```bash
