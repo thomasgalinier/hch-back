@@ -23,7 +23,6 @@ model Utilisateur {
   interventionsClient     Intervention[] @relation("ClientInterventions")
   interventionsTechnicien Intervention[] @relation("TechnicienInterventions")
   commentaires            Commentaire[]
-  plannings               Planning[]
   zones                   Zone[]
 }
 
@@ -62,8 +61,9 @@ model Intervention {
   forfait_id   String
   forfait      Forfait                @relation(fields: [forfait_id], references: [id])
 
-  zone_id String
-  zone    Zone   @relation(fields: [zone_id], references: [id])
+  zone_id               String
+  zone                  Zone                   @relation(fields: [zone_id], references: [id])
+  forfait_interventions Forfait_Intervention[]
 }
 
 model Commentaire {
@@ -86,9 +86,10 @@ model Photo {
 model Produit {
   id            String                 @id @default(cuid())
   nom           String
-  stock         Int
+  quantite      Int
   description   String
   prix          Float
+  categorie     String
   interventions Produit_Intervention[]
 }
 
@@ -101,42 +102,27 @@ model Produit_Intervention {
   intervention    Intervention @relation(fields: [id_intervention], references: [id])
 }
 
-model Forfait {
-  id             String         @id @default(cuid())
-  nom            String
-  prix           Float
-  description    String
-  type           String
-  categorie_velo String
-  interventions  Intervention[]
-  model_id       String
-  model          Modele         @relation(fields: [model_id], references: [id])
-}
-
-model Modele {
-  id              String           @id @default(cuid())
-  nom             String
+model Forfait_Intervention {
+  id              String       @id @default(cuid())
+  id_forfait      String
+  id_intervention String
+  prix            Float
   duree           Int
-  forfaits        Forfait[]
-  model_plannings Model_Planning[]
+  forfait         Forfait      @relation(fields: [id_forfait], references: [id])
+  intervention    Intervention @relation(fields: [id_intervention], references: [id])
 }
 
-model Planning {
-  id             String           @id @default(cuid())
-  id_technicien  String
-  id_model       String
-  debut          DateTime
-  fin            DateTime
-  technicien     Utilisateur      @relation(fields: [id_technicien], references: [id])
-  model_planning Model_Planning[]
-}
-
-model Model_Planning {
-  id          String   @id @default(cuid())
-  id_model    String
-  id_planning String
-  model       Modele   @relation(fields: [id_model], references: [id])
-  planning    Planning @relation(fields: [id_planning], references: [id])
+model Forfait {
+  id                    String                 @id @default(cuid())
+  titre                 String
+  prix                  Float
+  description           String
+  type                  String
+  categorie_velo        String
+  duree                 String
+  formatted_duree       Int
+  interventions         Intervention[]
+  forfait_interventions Forfait_Intervention[]
 }
 
 model Zone {

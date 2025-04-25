@@ -11,6 +11,8 @@ import { Request } from "express";
 @Injectable()
 export class AuthService {
   constructor(private readonly prisamService: PrismaService, private readonly jwtService: JwtService, private readonly configService: ConfigService) {}
+
+
   async signup(signupDto: SignupDto) {
     const {email, password,nom, prenom, telephone, role} = signupDto;
     const client = await this.prisamService.utilisateur.findUnique({where: {email}});
