@@ -86,9 +86,10 @@ model Photo {
 model Produit {
   id            String                 @id @default(cuid())
   nom           String
-  stock         Int
+  quantite      Int
   description   String
   prix          Float
+  categorie     String
   interventions Produit_Intervention[]
 }
 
