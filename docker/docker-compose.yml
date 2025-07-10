@@ -31,6 +31,7 @@ services:
       PORT: 3001
     ports:
       - "3001:3001"  # Expose le backend NestJS
+    command: sh -c "npx prisma migrate deploy && node dist/src/main.js"
     networks:
       - my_network
 
