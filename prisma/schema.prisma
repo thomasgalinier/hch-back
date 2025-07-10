@@ -46,8 +46,10 @@ model Entreprise {
 model Intervention {
   id        String      @id @default(cuid())
   debut     DateTime
+  fin       DateTime
   adresse   String
-  detail    String
+  detail    String?
+  color     String
   statut    String
   client_id String
   client    Utilisateur @relation("ClientInterventions", fields: [client_id], references: [id])
