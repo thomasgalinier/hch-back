@@ -15,9 +15,24 @@ services:
     networks:
       - my_network
 
+  backend:
+    build: ../  # On suppose que Dockerfile est dans le dossier parent
+    container_name: nest_backend
+    restart: always
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgres://admin:admin@db:5432/hch
+      NODE_ENV: production
+      PORT: 3001
+    ports:
+      - "3001:3001"  # Expose le backend NestJS
+    networks:
+      - my_network
+
 volumes:
   postgres_data:  # Définit le volume persistant nommé "postgres_data"
-    driver: local  # Utilise le driver local pour le volume
+    driver: local
 
 networks:
   my_network:  # Crée un réseau personnalisé si besoin

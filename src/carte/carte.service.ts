@@ -6,7 +6,7 @@ import { Request } from "express";
 
 @Injectable()
 export class CarteService {
-  constructor(private readonly prismaService: PrismaService, private  readonly configService: ConfigService) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   getCarte(request: Request) {
     return this.prismaService.zone.findMany();
