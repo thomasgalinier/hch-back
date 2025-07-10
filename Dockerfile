@@ -2,6 +2,9 @@
 FROM node:18-alpine as build
 WORKDIR /app
 
+ARG DATBASE_URL
+ENV DATABASE_URL=${DATBASE_URL}
+
 COPY package*.json ./
 RUN npm install
 

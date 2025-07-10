@@ -16,7 +16,10 @@ services:
       - my_network
 
   backend:
-    build: ../  # On suppose que Dockerfile est dans le dossier parent
+    build:
+      context: ../  # On suppose que Dockerfile est dans le dossier parent
+      args:
+        DATABASE_URL: postgres://admin:admin@db:5432/hch
     container_name: nest_backend
     restart: always
     depends_on:
