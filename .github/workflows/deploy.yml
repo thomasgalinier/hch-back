@@ -22,7 +22,8 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no root@217.154.117.179 << 'EOF'
             cd /var/www/hch-back/docker
-            git pull origin main
-            docker compose down
+            git checkout main
+            git pull
+            docker compose down -v 
             docker compose up -d --build
           EOF

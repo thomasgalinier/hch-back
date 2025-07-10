@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 
 @Controller('test')
 export class TestController {
@@ -6,8 +6,8 @@ export class TestController {
   getTest() {
     return { message: 'Test endpoint is working!' };
   }
-  @Get('/test/:name')
-  getTestWithName(name: string) {
+  @Get(':name')
+  getTestWithName(@Param('name') name: string) {
     return { message: `Hello, ${name}!` };
   }
 }
