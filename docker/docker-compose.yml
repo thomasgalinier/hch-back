@@ -23,6 +23,7 @@ services:
       - db
     environment:
       DATABASE_URL: postgres://admin:admin@db:5432/hch
+      SECRET_KEY: supersecretjwtkey
       NODE_ENV: production
       PORT: 3001
     ports:
