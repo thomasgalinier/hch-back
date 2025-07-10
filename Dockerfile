@@ -12,7 +12,6 @@ COPY . .
 
 RUN npm run build
 RUN npx prisma generate
-RUN npx prisma migrate deploy
 
 # === FINAL STAGE ===
 FROM node:18-alpine
