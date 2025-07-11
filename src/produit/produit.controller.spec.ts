@@ -34,12 +34,12 @@ describe('ProduitController', () => {
     it('doit appeler service.getProduit', async () => {
       const produits = [{ id: '1', nom: 'Produit1' }];
       service.getProduit.mockResolvedValue(produits);
-      await expect(controller.getProduit()).resolves.not.toEqual(produits);
+      await expect(controller.getProduit()).resolves.toEqual(produits);
       expect(service.getProduit).toHaveBeenCalled();
     });
   });
 
-  describe('createProduit', () => {
+  describe('createProduits', () => {
     it('doit appeler service.createProduit', async () => {
       const dto = { prix: 10, description: 'desc', nom: 'nom', quantite: 1, categorie: 'cat' };
       const produitCree = { id: '1', ...dto };
