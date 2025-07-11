@@ -39,7 +39,7 @@ describe('ProduitController', () => {
     });
   });
 
-  describe('createProduit', () => {
+  describe('createProduits', () => {
     it('doit appeler service.createProduit', async () => {
       const dto = { prix: 10, description: 'desc', nom: 'nom', quantite: 1, categorie: 'cat' };
       const produitCree = { id: '1', ...dto };
