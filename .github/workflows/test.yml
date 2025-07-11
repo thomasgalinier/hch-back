@@ -1,13 +1,13 @@
 name: Run test
+
 on:
   pull_request:
     branches:
       - main
 
 jobs:
-  build:
-    name: Run tests
   test:
+    name: Run tests
     runs-on: ubuntu-latest
 
     steps:
