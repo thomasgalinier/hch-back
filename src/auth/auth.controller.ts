@@ -20,10 +20,11 @@ export class AuthController {
   signin(@Body() signinDto: SigninDto) {
     return this.authService.signin(signinDto);
   }
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('ADMIN', 'TECHNICIEN', 'SUPER_ADMIN')
   @Get("all")
-  getAll(@Req() request: Request) {
-    return this.authService.getAll(request);
+  getAll() {
+    return this.authService.getAll();
   }
   @UseGuards(AuthGuard('jwt'))
   @Delete("delete/:id")
