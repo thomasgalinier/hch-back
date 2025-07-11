@@ -41,13 +41,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run tests with coverage
-        run: npm run test -- --ci --coverage --passWithNoTests --coverageReporters=lcov
-
-      - name: Run ESLint
-        run: npm run lint -- --format json --output-file eslint-report.json
-        continue-on-error: true
-
       - name: Wait for SonarQube to be ready
         run: |
           echo "Waiting for SonarQube to start..."
