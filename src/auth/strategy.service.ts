@@ -13,22 +13,25 @@ type Payload = {
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(configService: ConfigService, private readonly prismaService: PrismaService) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        (req) => req?.cookies?.token, // 👈 essentiel
+      ]),
       ignoreExpiration: false,
       secretOrKey: configService.get('SECRET_KEY'),
     });
   }
 
   async validate(payload: Payload) {
-    const utilisateur = await this.prismaService.utilisateur.findUnique({ where: { id: payload.sub } });
+    const utilisateur = await this.prismaService.utilisateur.findUnique({
+      where: { id: payload.sub },
+    });
 
-
-    const user = utilisateur;
-
-    if (!user) {
+    if (!utilisateur) {
       throw new Error('User not found');
     }
-    Reflect.deleteProperty(user, 'password');
-    return user;
+
+    Reflect.deleteProperty(utilisateur, 'password');
+    return utilisateur;
   }
 }
+
