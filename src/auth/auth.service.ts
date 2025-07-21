@@ -10,7 +10,7 @@ import * as bcrypt from 'bcrypt';
 import { SigninDto } from './dto/signinDto';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -55,7 +55,7 @@ export class AuthService {
     };
   }
 
-  async signin(signinDto: SigninDto) {
+  async signin(signinDto: SigninDto, res: Response) {
     const { email, password } = signinDto;
     const utilisateur = await this.prisamService.utilisateur.findUnique({
       where: { email },
@@ -68,8 +68,14 @@ export class AuthService {
       expiresIn: '1d',
       secret: this.configService.get('SECRET_KEY'),
     });
+    const isProd = this.configService.get('NODE_ENV') === 'production';
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: isProd ? 'none' : 'lax',
+      maxAge: 1000 * 60 * 60 * 24,
+    });
     return {
-      token,
       user: {
         id: utilisateur.id,
         email: utilisateur.email,
@@ -107,7 +113,6 @@ export class AuthService {
         "Vous n'êtes pas autorisé à accéder à cette ressource",
       );
     const id = request.params.id;
-    console.log(request);
     return this.prisamService.utilisateur.update({
       where: { id },
       data: request.body,
@@ -148,5 +153,15 @@ export class AuthService {
         role: true,
       },
     });
+  }
+
+  logout(res: Response) {
+    const isProd = this.configService.get('NODE_ENV') === 'production';
+    res.clearCookie('token', {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: isProd ? 'none' : 'lax',
+    });
+    return { message: 'Déconnexion réussie' };
   }
 }
