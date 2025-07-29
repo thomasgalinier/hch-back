@@ -1,11 +1,13 @@
-import { Body, Controller, Delete, Get, Post, Put, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Post, Put, Req, Res, UseGuards } from '@nestjs/common';
 import { SignupDto } from "./dto/signupDto";
 import { AuthService } from "./auth.service";
 import { SigninDto } from "./dto/signinDto";
 import { AuthGuard } from "@nestjs/passport";
-import { Request } from "express";
+import { Request, Response } from "express";
 import { RolesGuard } from '../common/middleware/role.middleware';
 import { Roles } from '../common/decorator/role.decorator';
+import { JwtAuthGuard } from '../common/jwt-auth.guard';
+
 
 
 @Controller('auth')
@@ -17,8 +19,8 @@ export class AuthController {
     return this.authService.signup(signupDto);
   }
   @Post("signin")
-  signin(@Body() signinDto: SigninDto) {
-    return this.authService.signin(signinDto);
+  signin(@Body() signinDto: SigninDto, @Res({ passthrough: true }) res: Response) {
+    return this.authService.signin(signinDto, res);
   }
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('ADMIN', 'TECHNICIEN', 'SUPER_ADMIN')
@@ -39,7 +41,7 @@ export class AuthController {
   @UseGuards(AuthGuard('jwt'))
   @Get("me")
   getMe(@Req() request: Request){
-    // @ts-ignore
+
     return request.user;
   }
   @UseGuards(AuthGuard('jwt'))
@@ -53,5 +55,9 @@ export class AuthController {
   @Get("client")
   getClient() {
     return this.authService.getClient();
+  }
+  @Post('logout')
+  logout(@Res({ passthrough: true }) res: Response){
+    return this.authService.logout(res)
   }
 }
