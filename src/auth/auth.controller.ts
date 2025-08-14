@@ -46,8 +46,10 @@ export class AuthController {
   }
   @UseGuards(AuthGuard('jwt'))
   @Get("technicien")
-  getTechnicien(@Req() request: Request){
-    return this.authService.getTechnicien(request);
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('ADMIN', 'SUPER_ADMIN')
+  getTechnicien(){
+    return this.authService.getTechnicien();
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
