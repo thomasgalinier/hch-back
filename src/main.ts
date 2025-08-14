@@ -19,8 +19,7 @@ async function bootstrap() {
     .addTag('auth', 'Authentification')
     .addTag('forfait', 'Gestion des forfaits')
     .addTag('carte', 'Gestion des zones')
-  .addBearerAuth()
-  .addCookieAuth('token')
+    .addBearerAuth()
     .build();
   
   const document = SwaggerModule.createDocument(app, config);
