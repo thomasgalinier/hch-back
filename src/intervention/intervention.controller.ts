@@ -13,7 +13,8 @@ import {
 } from './dto/response.dto';
 import { BulkCreateEmptyInterventionsDto, BulkCreateEmptyInterventionsResponseDto } from './dto/bulkCreateEmptyInterventions.dto';
 import { DeleteInterventionsRangeDto, DeleteInterventionsRangeResponseDto } from './dto/deleteInterventionsRange.dto';
-import { Roles } from 'src/common/decorator/role.decorator';
+import { DeleteInterventionResponseDto } from './dto/deleteIntervention.dto';
+import { Roles } from '../common/decorator/role.decorator';
 
 @ApiTags('intervention')
 @Controller('intervention')
@@ -80,6 +81,19 @@ export class InterventionController {
     @Body() body: UpdateInterventionDto,
   ): Promise<InterventionResponseDto> {
     return this.interventionService.updateIntervention(id, body);
+  }
+
+  /**
+   * Supprimer une intervention par ID
+   */
+  @UseGuards(AuthGuard("jwt"), RolesGuard)
+  @Roles("ADMIN", "SUPER_ADMIN")
+  @Delete(":id")
+  @ApiOperation({ summary: "Supprimer une intervention" })
+  @ApiParam({ name: 'id', description: "ID de l'intervention" })
+  @ApiResponse({ status: 200, description: "Intervention supprimée", type: DeleteInterventionResponseDto })
+  async delete(@Param('id') id: string): Promise<DeleteInterventionResponseDto> {
+    return this.interventionService.deleteInterventionById(id);
   }
 
 }
