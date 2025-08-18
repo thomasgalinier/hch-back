@@ -5,6 +5,7 @@ import { CreateInterventionDto } from './dto/createIntervention.dto';
 import { UpdateInterventionDto } from './dto/updateIntervention.dto';
 import { BulkCreateEmptyInterventionsDto } from './dto/bulkCreateEmptyInterventions.dto';
 import { DeleteInterventionsRangeDto } from './dto/deleteInterventionsRange.dto';
+import { DeleteInterventionResponseDto } from './dto/deleteIntervention.dto';
 
 @Injectable()
 export class InterventionService {
@@ -73,6 +74,22 @@ export class InterventionService {
         updatedAt: fmt(i.updatedAt),
       };
     });
+  }
+
+  /**
+   * Supprime une intervention par ID, en nettoyant également la table Forfait_Intervention liée.
+   */
+  async deleteInterventionById(id: string): Promise<DeleteInterventionResponseDto> {
+    const exist = await this.prisma.intervention.findUnique({ where: { id }, select: { id: true } });
+    if (!exist) throw new NotFoundException('Intervention introuvable');
+
+    const result = await this.prisma.$transaction(async (tx) => {
+      const forfaitDelete = await tx.forfait_Intervention.deleteMany({ where: { id_intervention: id } });
+      await tx.intervention.delete({ where: { id } });
+      return { forfaitDeleteCount: forfaitDelete.count };
+    });
+
+    return { id, deleted: true, deletedForfaitsCount: result.forfaitDeleteCount };
   }
 
   /**

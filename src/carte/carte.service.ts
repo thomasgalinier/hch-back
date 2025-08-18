@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { ConflictException, Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { ConfigService } from "@nestjs/config";
 import { CreateZoneDto } from "./dto/createZoneDto";
@@ -52,9 +52,27 @@ export class CarteService {
 
   deleteZone(request:Request) {
     const id = request.params.id;
-    return this.prismaService.zone.delete({
-      where: {id}
-  });
+    return this.prismaService.$transaction(async (tx) => {
+      const interventionsCount = await tx.intervention.count({ where: { zone_id: id } });
+
+      if (interventionsCount > 0) {
+        throw new ConflictException(
+          `Impossible de supprimer la zone: ${interventionsCount} intervention(s) y sont encore rattachée(s). Réassignez ou supprimez-les d'abord.`,
+        );
+      }
+
+      try {
+        return await tx.zone.delete({ where: { id } });
+      } catch (err: any) {
+        if (err?.code === "P2003") {
+          // FK constraint violation (race condition)
+          throw new ConflictException(
+            "Impossible de supprimer la zone: des interventions y sont rattachées. Réassignez ou supprimez-les d'abord.",
+          );
+        }
+        throw err;
+      }
+    });
   }
 
 }
