@@ -2,11 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateForfaitDto } from './dto/createForfaitDto';
 import { Request } from "express";
-import { convertirEnMillisecondes} from '../utils/duree.util';
+import { convertirEnMillisecondes } from '../utils/duree.util';
 
 @Injectable()
 export class ForfaitService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaService) { }
   getForfait() {
     return this.prismaService.forfait.findMany();
   }
@@ -31,6 +31,7 @@ export class ForfaitService {
 
   updateForfait(request: Request) {
     const id = request.params.id;
+    console.log('toto',request.body.forfait);
     const { duree, prix } = request.body.forfait;
     const dureeFormatted = convertirEnMillisecondes(duree);
 

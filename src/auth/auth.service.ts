@@ -119,18 +119,13 @@ export class AuthService {
     });
   }
 
-  getTechnicien(request: Request) {
-    // @ts-ignore
-    const user = request.user;
-    // @ts-ignore
-    const isAdmin = user.role === 'ADMIN' || user.role === 'SUPER_ADMIN';
-    if (!isAdmin)
-      throw new UnauthorizedException(
-        "Vous n'êtes pas autorisé à accéder à cette ressource",
-      );
+  getTechnicien() {
+    
+    
     return this.prisamService.utilisateur.findMany({
       where: { role: 'TECHNICIEN' },
       select: {
+  zone: { select: { id: true } },
         id: true,
         email: true,
         nom: true,

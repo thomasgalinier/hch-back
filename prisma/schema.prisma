@@ -22,8 +22,7 @@ model Utilisateur {
   entreprise              Entreprise?    @relation(fields: [entreprise_id], references: [id])
   interventionsClient     Intervention[] @relation("ClientInterventions")
   interventionsTechnicien Intervention[] @relation("TechnicienInterventions")
-  commentaires            Commentaire[]
-  zones                   Zone[]
+  zone                    Zone?
 }
 
 enum Role {
@@ -43,66 +42,13 @@ model Entreprise {
   utilisateurs       Utilisateur[]
 }
 
-model Intervention {
-  id        String      @id @default(cuid())
-  debut     DateTime
-  fin       DateTime
-  adresse   String
-  detail    String?
-  color     String
-  statut    String
-  client_id String
-  client    Utilisateur @relation("ClientInterventions", fields: [client_id], references: [id])
 
-  technicien_id String
-  technicien    Utilisateur @relation("TechnicienInterventions", fields: [technicien_id], references: [id])
 
-  commentaires Commentaire[]
-  photos       Photo[]
-  produits     Produit_Intervention[]
-  forfait_id   String
-  forfait      Forfait                @relation(fields: [forfait_id], references: [id])
 
-  zone_id               String
-  zone                  Zone                   @relation(fields: [zone_id], references: [id])
-  forfait_interventions Forfait_Intervention[]
-}
 
-model Commentaire {
-  id              String       @id @default(cuid())
-  id_technicien   String
-  id_intervention String
-  contenu         String
-  createdAt       DateTime     @default(now())
-  technicien      Utilisateur  @relation(fields: [id_technicien], references: [id])
-  intervention    Intervention @relation(fields: [id_intervention], references: [id])
-}
 
-model Photo {
-  id              String       @id @default(cuid())
-  id_intervention String
-  url             String
-  intervention    Intervention @relation(fields: [id_intervention], references: [id])
-}
 
-model Produit {
-  id            String                 @id @default(cuid())
-  nom           String
-  quantite      Int
-  description   String
-  prix          Float
-  categorie     String
-  interventions Produit_Intervention[]
-}
 
-model Produit_Intervention {
-  id              String       @id @default(cuid())
-  id_produit      String
-  id_intervention String
-  quantite        Int
-  produit         Produit      @relation(fields: [id_produit], references: [id])
-  intervention    Intervention @relation(fields: [id_intervention], references: [id])
-}
 
 model Forfait_Intervention {
   id              String       @id @default(cuid())
@@ -123,7 +69,6 @@ model Forfait {
   categorie_velo        String
   duree                 String
   formatted_duree       Int
-  interventions         Intervention[]
   forfait_interventions Forfait_Intervention[]
 }
 
@@ -133,6 +78,34 @@ model Zone {
   polygone      Json
   color         String
   interventions Intervention[]
-  id_technicien String?
-  techniciens   Utilisateur[]
+  // Single assigned technician per zone
+  technicien_id String?        @unique
+  technicien    Utilisateur?   @relation(fields: [technicien_id], references: [id], onDelete: SetNull)
+}
+model Intervention {
+  id            String                 @id @default(cuid())
+  debut         DateTime
+  fin           DateTime
+  adresse       String?
+  statut        InterventionStatut
+  client_id     String?
+  client        Utilisateur?            @relation("ClientInterventions", fields: [client_id], references: [id])
+  technicien_id String
+  technicien    Utilisateur            @relation("TechnicienInterventions", fields: [technicien_id], references: [id])
+  zone_id       String
+  zone          Zone                   @relation(fields: [zone_id], references: [id])
+  detail        String?
+  forfait_interventions Forfait_Intervention[]
+  createdAt     DateTime               @default(now())
+  updatedAt     DateTime               @updatedAt
+}
+
+
+
+enum InterventionStatut {
+  UNPLANNED
+  PLANNED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
 }
