@@ -35,7 +35,8 @@ export class CarteService {
     return this.prismaService.zone.create({
       data: {
         nom,
-        polygone,
+  // Cast DTO to Prisma JSON type
+  polygone: polygone as any,
         color
       }
     });
