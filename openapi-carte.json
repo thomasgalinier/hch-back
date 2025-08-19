@@ -1,0 +1,1137 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/carte": {
+      "get": {
+        "operationId": "CarteController_getCarte",
+        "summary": "Lister les zones",
+        "description": "Retourne la liste des zones avec, le cas échéant, le technicien assigné.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Liste des zones",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ZoneEntity"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non authentifié"
+          },
+          "403": {
+            "description": "Accès interdit"
+          }
+        },
+        "tags": [
+          "carte"
+        ],
+        "security": [
+          {
+            "token": []
+          },
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/carte/create": {
+      "post": {
+        "operationId": "CarteController_createZone",
+        "summary": "Créer une zone",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateZoneDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Zone créée",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ZoneEntity"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non authentifié"
+          },
+          "403": {
+            "description": "Accès interdit"
+          }
+        },
+        "tags": [
+          "carte"
+        ],
+        "security": [
+          {
+            "token": []
+          },
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/carte/update/{id}": {
+      "put": {
+        "operationId": "CarteController_updateZone",
+        "summary": "Mettre à jour une zone",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Identifiant de la zone",
+            "schema": {}
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateZoneDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Zone mise à jour",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ZoneEntity"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non authentifié"
+          },
+          "403": {
+            "description": "Accès interdit"
+          }
+        },
+        "tags": [
+          "carte"
+        ],
+        "security": [
+          {
+            "token": []
+          },
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/carte/{id}/assign-technician": {
+      "patch": {
+        "operationId": "CarteController_assignTechnicianToZone",
+        "summary": "Assigner un technicien à une zone",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Identifiant de la zone",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignTechnicianDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Zone mise à jour avec technicien assigné",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ZoneEntity"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non authentifié"
+          },
+          "403": {
+            "description": "Accès interdit"
+          }
+        },
+        "tags": [
+          "carte"
+        ],
+        "security": [
+          {
+            "token": []
+          },
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/carte/delete/{id}": {
+      "delete": {
+        "operationId": "CarteController_deleteZone",
+        "summary": "Supprimer une zone",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Identifiant de la zone",
+            "schema": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Zone supprimée",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ZoneEntity"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non authentifié"
+          },
+          "403": {
+            "description": "Accès interdit"
+          },
+          "409": {
+            "description": "Impossible de supprimer la zone car des interventions y sont rattachées"
+          }
+        },
+        "tags": [
+          "carte"
+        ],
+        "security": [
+          {
+            "token": []
+          },
+          {
+            "bearer": []
+          }
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Home Cycle Home API",
+    "description": "API pour la gestion des interventions de réparation de vélos à domicile",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [
+    {
+      "name": "carte",
+      "description": "Gestion des zones"
+    }
+  ],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      },
+      "cookie": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "token"
+      }
+    },
+    "schemas": {
+      "SignupDto": {
+        "type": "object",
+        "properties": {
+          "nom": {
+            "type": "string",
+            "example": "Doe"
+          },
+          "prenom": {
+            "type": "string",
+            "example": "Jane"
+          },
+          "email": {
+            "type": "string",
+            "example": "jane.doe@example.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "SuperSecret123!"
+          },
+          "telephone": {
+            "type": "string",
+            "example": "+33601020304"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "SUPER_ADMIN",
+              "ADMIN",
+              "TECHNICIEN",
+              "CLIENT"
+            ],
+            "example": "CLIENT"
+          }
+        },
+        "required": [
+          "nom",
+          "prenom",
+          "email",
+          "password",
+          "telephone",
+          "role"
+        ]
+      },
+      "UserDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "12345",
+            "description": "Identifiant de l'utilisateur"
+          },
+          "email": {
+            "type": "string",
+            "example": "jane.doe@example.com"
+          },
+          "nom": {
+            "type": "string",
+            "example": "Doe"
+          },
+          "prenom": {
+            "type": "string",
+            "example": "Jane"
+          },
+          "telephone": {
+            "type": "string",
+            "example": "+33601020304"
+          },
+          "role": {
+            "type": "string",
+            "example": "TECHNICIEN",
+            "enum": [
+              "SUPER_ADMIN",
+              "ADMIN",
+              "TECHNICIEN",
+              "CLIENT"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "nom",
+          "prenom",
+          "telephone",
+          "role"
+        ]
+      },
+      "SignupResponseDto": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "JWT à utiliser en Authorization: Bearer <token>",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserDto"
+          }
+        },
+        "required": [
+          "token",
+          "user"
+        ]
+      },
+      "SigninDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "jane.doe@example.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "SuperSecret123!"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "SigninResponseDto": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/UserDto"
+          }
+        },
+        "required": [
+          "user"
+        ]
+      },
+      "LogoutResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Déconnexion réussie"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "GeoJSONPolygon": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "Polygon"
+          },
+          "coordinates": {
+            "description": "Coordonnées GeoJSON [ [ [lng, lat], ... ] ]",
+            "example": [
+              [
+                [
+                  2.35,
+                  48.85
+                ],
+                [
+                  2.36,
+                  48.85
+                ],
+                [
+                  2.36,
+                  48.86
+                ],
+                [
+                  2.35,
+                  48.86
+                ],
+                [
+                  2.35,
+                  48.85
+                ]
+              ]
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "type",
+          "coordinates"
+        ]
+      },
+      "TechnicienEntity": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "tech_123"
+          },
+          "nom": {
+            "type": "string",
+            "example": "Dupont"
+          },
+          "prenom": {
+            "type": "string",
+            "example": "Jean"
+          },
+          "email": {
+            "type": "string",
+            "example": "jean.dupont@example.com"
+          }
+        },
+        "required": [
+          "id",
+          "nom",
+          "prenom",
+          "email"
+        ]
+      },
+      "ZoneEntity": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "zone_123"
+          },
+          "nom": {
+            "type": "string",
+            "example": "Zone Paris 1"
+          },
+          "polygone": {
+            "$ref": "#/components/schemas/GeoJSONPolygon"
+          },
+          "color": {
+            "type": "string",
+            "example": "#FF5733"
+          },
+          "technicien_id": {
+            "type": "string",
+            "example": "tech_123",
+            "nullable": true
+          },
+          "technicien": {
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TechnicienEntity"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "nom",
+          "polygone",
+          "color",
+          "technicien_id",
+          "technicien"
+        ]
+      },
+      "GeoJSONPolygonDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "Polygon"
+          },
+          "coordinates": {
+            "description": "Coordonnées GeoJSON [ [ [lng, lat], ... ] ]",
+            "example": [
+              [
+                [
+                  2.35,
+                  48.85
+                ],
+                [
+                  2.36,
+                  48.85
+                ],
+                [
+                  2.36,
+                  48.86
+                ],
+                [
+                  2.35,
+                  48.86
+                ],
+                [
+                  2.35,
+                  48.85
+                ]
+              ]
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "type",
+          "coordinates"
+        ]
+      },
+      "CreateZoneDto": {
+        "type": "object",
+        "properties": {
+          "nom": {
+            "type": "string",
+            "example": "Zone 1"
+          },
+          "polygone": {
+            "$ref": "#/components/schemas/GeoJSONPolygonDto"
+          },
+          "idTechnicien": {
+            "type": "string",
+            "description": "Identifiant du technicien assigné",
+            "nullable": true
+          },
+          "color": {
+            "type": "string",
+            "example": "#00AAFF"
+          }
+        },
+        "required": [
+          "nom",
+          "polygone",
+          "color"
+        ]
+      },
+      "UpdateZoneDto": {
+        "type": "object",
+        "properties": {
+          "nom": {
+            "type": "string",
+            "example": "Zone 1"
+          },
+          "polygone": {
+            "$ref": "#/components/schemas/GeoJSONPolygonDto"
+          },
+          "idTechnicien": {
+            "type": "string",
+            "description": "Identifiant du technicien assigné",
+            "nullable": true
+          },
+          "color": {
+            "type": "string",
+            "example": "#00AAFF"
+          }
+        }
+      },
+      "AssignTechnicianDto": {
+        "type": "object",
+        "properties": {
+          "technicienId": {
+            "type": "string",
+            "description": "Identifiant du technicien à assigner",
+            "example": "tech_123"
+          }
+        },
+        "required": [
+          "technicienId"
+        ]
+      },
+      "CreateForfaitDto": {
+        "type": "object",
+        "properties": {
+          "titre": {
+            "type": "string",
+            "description": "Titre du forfait",
+            "example": "Forfait Hebdomadaire Standard"
+          },
+          "prix": {
+            "type": "string",
+            "description": "Prix du forfait en euros (format string, sera converti en nombre)",
+            "example": "29.99"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description détaillée du forfait",
+            "example": "Accès illimité aux vélos de la catégorie standard pour une durée d'une semaine"
+          },
+          "type": {
+            "type": "string",
+            "description": "Type de forfait",
+            "example": "PREMIUM"
+          },
+          "categorie_velo": {
+            "type": "string",
+            "description": "Catégorie de vélo concernée par le forfait",
+            "example": "STANDARD"
+          },
+          "duree": {
+            "type": "string",
+            "description": "Durée du forfait (format lisible)",
+            "example": "7 jours"
+          }
+        },
+        "required": [
+          "titre",
+          "prix",
+          "description",
+          "type",
+          "categorie_velo",
+          "duree"
+        ]
+      },
+      "BulkCreateEmptyInterventionsDto": {
+        "type": "object",
+        "properties": {
+          "technicien_id": {
+            "type": "string",
+            "description": "ID du technicien",
+            "example": "cm4xkj8p90001xyz123abc456"
+          },
+          "zone_id": {
+            "type": "string",
+            "description": "ID de la zone",
+            "example": "cm4xkj8p90002xyz789def012"
+          },
+          "date_debut": {
+            "type": "string",
+            "description": "Date de début (YYYY-MM-DD)",
+            "example": "2025-08-10"
+          },
+          "date_fin": {
+            "type": "string",
+            "description": "Date de fin (YYYY-MM-DD)",
+            "example": "2025-09-20"
+          },
+          "heure_debut": {
+            "type": "number",
+            "description": "Heure de début de la journée (0-23)",
+            "example": 8
+          },
+          "minute_debut": {
+            "type": "number",
+            "description": "Minute de début (0-59)",
+            "example": 30
+          },
+          "heure_fin": {
+            "type": "number",
+            "description": "Heure de fin de la journée (1-23)",
+            "example": 18
+          },
+          "minute_fin": {
+            "type": "number",
+            "description": "Minute de fin (0-59)",
+            "example": 30
+          },
+          "duree_minutes": {
+            "type": "number",
+            "description": "Durée des créneaux en minutes",
+            "example": 60
+          }
+        },
+        "required": [
+          "technicien_id",
+          "zone_id",
+          "date_debut",
+          "date_fin"
+        ]
+      },
+      "BulkCreateEmptyInterventionsResponseDto": {
+        "type": "object",
+        "properties": {
+          "createdCount": {
+            "type": "number",
+            "description": "Nombre de créneaux créés",
+            "example": 22
+          },
+          "skippedCount": {
+            "type": "number",
+            "description": "Nombre de créneaux ignorés (chevauchement/existants)",
+            "example": 5
+          },
+          "createdIds": {
+            "description": "Identifiants des interventions créées",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "createdCount",
+          "skippedCount",
+          "createdIds"
+        ]
+      },
+      "ClientDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "cm4xkj8p90001xyz123abc456"
+          },
+          "nom": {
+            "type": "string",
+            "example": "Martin"
+          },
+          "prenom": {
+            "type": "string",
+            "example": "Marie"
+          },
+          "email": {
+            "type": "string",
+            "example": "marie.martin@example.com"
+          },
+          "telephone": {
+            "type": "string",
+            "example": "0987654321"
+          }
+        },
+        "required": [
+          "id",
+          "nom",
+          "prenom",
+          "email",
+          "telephone"
+        ]
+      },
+      "TechnicienDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "cm4xkj8p90001xyz123abc456"
+          },
+          "nom": {
+            "type": "string",
+            "example": "Dupont"
+          },
+          "prenom": {
+            "type": "string",
+            "example": "Jean"
+          },
+          "email": {
+            "type": "string",
+            "example": "jean.dupont@example.com"
+          },
+          "telephone": {
+            "type": "string",
+            "example": "0123456789"
+          }
+        },
+        "required": [
+          "id",
+          "nom",
+          "prenom",
+          "email",
+          "telephone"
+        ]
+      },
+      "ZoneDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "cm4xkj8p90002xyz789def012"
+          },
+          "nom": {
+            "type": "string",
+            "example": "Paris 15ème"
+          },
+          "color": {
+            "type": "string",
+            "example": "#FF5733"
+          }
+        },
+        "required": [
+          "id",
+          "nom",
+          "color"
+        ]
+      },
+      "ForfaitDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "cm4xkj8p90003xyz345ghi678"
+          },
+          "titre": {
+            "type": "string",
+            "example": "Réparation Standard"
+          },
+          "prix": {
+            "type": "number",
+            "example": 45.99
+          },
+          "description": {
+            "type": "string",
+            "example": "Réparation de base incluant vérification générale"
+          },
+          "duree": {
+            "type": "string",
+            "example": "1h30"
+          },
+          "formatted_duree": {
+            "type": "number",
+            "example": 90
+          }
+        },
+        "required": [
+          "id",
+          "titre",
+          "prix",
+          "description",
+          "duree",
+          "formatted_duree"
+        ]
+      },
+      "ForfaitInterventionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "cm4xkj8p90004xyz901jkl234"
+          },
+          "id_forfait": {
+            "type": "string",
+            "example": "cm4xkj8p90003xyz345ghi678"
+          },
+          "id_intervention": {
+            "type": "string",
+            "example": "cm4xkj8p90005xyz567mno890"
+          },
+          "prix": {
+            "type": "number",
+            "example": 45.99,
+            "description": "Prix du forfait au moment T"
+          },
+          "duree": {
+            "type": "number",
+            "example": 90,
+            "description": "Durée du forfait au moment T (en minutes)"
+          },
+          "forfait": {
+            "$ref": "#/components/schemas/ForfaitDto"
+          }
+        },
+        "required": [
+          "id",
+          "id_forfait",
+          "id_intervention",
+          "prix",
+          "duree",
+          "forfait"
+        ]
+      },
+      "InterventionResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "cm4xkj8p90005xyz567mno890"
+          },
+          "debut": {
+            "type": "string",
+            "example": "2025-08-06T14:00:00.000Z"
+          },
+          "fin": {
+            "type": "string",
+            "example": "2025-08-06T16:00:00.000Z"
+          },
+          "adresse": {
+            "type": "string",
+            "example": "123 Rue de la Paix, 75001 Paris"
+          },
+          "statut": {
+            "type": "string",
+            "example": "PLANNED",
+            "enum": [
+              "PLANNED",
+              "IN_PROGRESS",
+              "COMPLETED",
+              "CANCELLED"
+            ]
+          },
+          "client_id": {
+            "type": "string",
+            "example": "cm4xkj8p90001xyz123abc456"
+          },
+          "technicien_id": {
+            "type": "string",
+            "example": "cm4xkj8p90001xyz123abc456"
+          },
+          "zone_id": {
+            "type": "string",
+            "example": "cm4xkj8p90002xyz789def012"
+          },
+          "detail": {
+            "type": "string",
+            "example": "Détail: Réparation urgente | Vélo: VTT Giant rouge | Problème: Frein arrière défaillant"
+          },
+          "client": {
+            "$ref": "#/components/schemas/ClientDto"
+          },
+          "technicien": {
+            "$ref": "#/components/schemas/TechnicienDto"
+          },
+          "zone": {
+            "$ref": "#/components/schemas/ZoneDto"
+          },
+          "forfait_intervention": {
+            "$ref": "#/components/schemas/ForfaitInterventionDto"
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2025-08-06T12:00:00.000Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "example": "2025-08-06T12:00:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "debut",
+          "fin",
+          "adresse",
+          "statut",
+          "client_id",
+          "technicien_id",
+          "zone_id",
+          "client",
+          "technicien",
+          "zone",
+          "forfait_intervention",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "DeleteInterventionsRangeDto": {
+        "type": "object",
+        "properties": {
+          "date_debut": {
+            "type": "string",
+            "description": "Date de début (YYYY-MM-DD) incluse",
+            "example": "2025-08-10"
+          },
+          "date_fin": {
+            "type": "string",
+            "description": "Date de fin (YYYY-MM-DD) incluse",
+            "example": "2025-08-20"
+          }
+        },
+        "required": [
+          "date_debut",
+          "date_fin"
+        ]
+      },
+      "DeleteInterventionsRangeResponseDto": {
+        "type": "object",
+        "properties": {
+          "deletedInterventionsCount": {
+            "type": "number",
+            "description": "Nombre d'interventions supprimées",
+            "example": 12
+          },
+          "deletedForfaitsCount": {
+            "type": "number",
+            "description": "Nombre de lignes Forfait_Intervention supprimées",
+            "example": 8
+          },
+          "interventionIds": {
+            "description": "Identifiants des interventions supprimées",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "deletedInterventionsCount",
+          "deletedForfaitsCount",
+          "interventionIds"
+        ]
+      },
+      "UpdateInterventionDto": {
+        "type": "object",
+        "properties": {
+          "debut": {
+            "type": "string",
+            "description": "Nouvelle date/heure de début",
+            "example": "2025-08-06T14:00:00Z",
+            "format": "date-time"
+          },
+          "fin": {
+            "type": "string",
+            "description": "Nouvelle date/heure de fin",
+            "example": "2025-08-06T16:00:00Z",
+            "format": "date-time"
+          },
+          "adresse": {
+            "type": "string",
+            "description": "Adresse de l'intervention",
+            "example": "123 Rue de la Paix, 75001 Paris"
+          },
+          "statut": {
+            "type": "string",
+            "description": "Statut",
+            "enum": [
+              "UNPLANNED",
+              "PLANNED",
+              "IN_PROGRESS",
+              "COMPLETED",
+              "CANCELLED"
+            ],
+            "example": "PLANNED"
+          },
+          "client_id": {
+            "type": "string",
+            "description": "ID du client",
+            "example": "cm4xkj8p90001xyz123abc456"
+          },
+          "technicien_id": {
+            "type": "string",
+            "description": "ID du technicien",
+            "example": "cm4xkj8p90001xyz123abc456"
+          },
+          "zone_id": {
+            "type": "string",
+            "description": "ID de la zone",
+            "example": "cm4xkj8p90002xyz789def012"
+          },
+          "detail": {
+            "type": "string",
+            "description": "Détails supplémentaires",
+            "example": "Réparation urgente - client disponible toute la journée"
+          },
+          "forfait_id": {
+            "type": "string",
+            "description": "Mettre à jour le forfait associé",
+            "example": "cm4xkj8p90003xyz345ghi678"
+          }
+        }
+      },
+      "DeleteInterventionResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID de l'intervention supprimée",
+            "example": "cm4xkj8p90005xyz567mno890"
+          },
+          "deleted": {
+            "type": "boolean",
+            "description": "Indique si la suppression a réussi",
+            "example": true
+          },
+          "deletedForfaitsCount": {
+            "type": "number",
+            "description": "Nombre de lignes Forfait_Intervention supprimées",
+            "example": 1
+          }
+        },
+        "required": [
+          "id",
+          "deleted",
+          "deletedForfaitsCount"
+        ]
+      }
+    }
+  }
+}
