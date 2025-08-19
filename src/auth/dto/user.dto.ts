@@ -1,7 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UserDto {
-  @ApiProperty({ example: '12345', description: "Identifiant de l'utilisateur" })
+  @ApiProperty({
+    example: '12345',
+    description: "Identifiant de l'utilisateur",
+  })
   id: string;
 
   @ApiProperty({ example: 'jane.doe@example.com' })
@@ -16,6 +19,9 @@ export class UserDto {
   @ApiProperty({ example: '+33601020304' })
   telephone: string;
 
-  @ApiProperty({ example: 'TECHNICIEN', enum: ['SUPER_ADMIN', 'ADMIN', 'TECHNICIEN', 'CLIENT'] })
+  @ApiProperty({
+    example: 'TECHNICIEN',
+    enum: ['SUPER_ADMIN', 'ADMIN', 'TECHNICIEN', 'CLIENT'],
+  })
   role?: 'SUPER_ADMIN' | 'ADMIN' | 'TECHNICIEN' | 'CLIENT';
 }

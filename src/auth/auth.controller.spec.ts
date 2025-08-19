@@ -7,7 +7,7 @@ import { ExecutionContext } from '@nestjs/common';
 
 // Simple allow-all guard mock for controller unit tests
 class AllowGuard {
-  canActivate(context: ExecutionContext) {
+  canActivate() {
     return true;
   }
 }

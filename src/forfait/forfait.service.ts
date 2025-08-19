@@ -1,20 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateForfaitDto } from './dto/createForfaitDto';
-import { Request } from "express";
+import { Request } from 'express';
 import { convertirEnMillisecondes } from '../utils/duree.util';
 
 @Injectable()
 export class ForfaitService {
-  constructor(private readonly prismaService: PrismaService) { }
+  constructor(private readonly prismaService: PrismaService) {}
   getForfait() {
     return this.prismaService.forfait.findMany();
   }
 
   createForfait(createForfaitDto: CreateForfaitDto) {
-
-
-    const { titre, prix, description, type, categorie_velo, duree } = createForfaitDto;
+    const { titre, prix, description, type, categorie_velo, duree } =
+      createForfaitDto;
     const formattedDuree = convertirEnMillisecondes(duree);
     return this.prismaService.forfait.create({
       data: {
@@ -31,7 +30,7 @@ export class ForfaitService {
 
   updateForfait(request: Request) {
     const id = request.params.id;
-    console.log('toto',request.body.forfait);
+    console.log('toto', request.body.forfait);
     const { duree, prix } = request.body.forfait;
     const dureeFormatted = convertirEnMillisecondes(duree);
 
@@ -41,7 +40,7 @@ export class ForfaitService {
         ...request.body.forfait,
         prix: parseFloat(prix),
         formatted_duree: dureeFormatted,
-      }
+      },
     });
   }
 

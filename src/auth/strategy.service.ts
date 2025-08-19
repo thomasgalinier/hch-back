@@ -1,8 +1,8 @@
-import { Injectable } from "@nestjs/common";
-import { ExtractJwt, Strategy } from "passport-jwt";
-import { PassportStrategy } from "@nestjs/passport";
-import { ConfigService } from "@nestjs/config";
-import { PrismaService } from "../prisma/prisma.service";
+import { Injectable } from '@nestjs/common';
+import { ExtractJwt, Strategy } from 'passport-jwt';
+import { PassportStrategy } from '@nestjs/passport';
+import { ConfigService } from '@nestjs/config';
+import { PrismaService } from '../prisma/prisma.service';
 
 type Payload = {
   sub: string;
@@ -11,7 +11,10 @@ type Payload = {
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(configService: ConfigService, private readonly prismaService: PrismaService) {
+  constructor(
+    configService: ConfigService,
+    private readonly prismaService: PrismaService,
+  ) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (req) => req?.cookies?.token, // 👈 essentiel
@@ -34,4 +37,3 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     return utilisateur;
   }
 }
-

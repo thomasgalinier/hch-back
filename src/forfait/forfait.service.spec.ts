@@ -17,7 +17,9 @@ const mockPrismaService = {
 
 // Mock pour l'utilitaire de conversion de durée
 jest.mock('../utils/duree.util', () => ({
-  convertirEnMillisecondes: jest.fn().mockImplementation((duree) => `${duree}_converted`),
+  convertirEnMillisecondes: jest
+    .fn()
+    .mockImplementation((duree) => `${duree}_converted`),
 }));
 
 describe('ForfaitService', () => {
@@ -47,8 +49,18 @@ describe('ForfaitService', () => {
   describe('getForfait', () => {
     it('should return all forfaits', async () => {
       const expectedForfaits = [
-        { id: '1', titre: 'Forfait 1', prix: 50, description: 'Test description' },
-        { id: '2', titre: 'Forfait 2', prix: 100, description: 'Test description 2' },
+        {
+          id: '1',
+          titre: 'Forfait 1',
+          prix: 50,
+          description: 'Test description',
+        },
+        {
+          id: '2',
+          titre: 'Forfait 2',
+          prix: 100,
+          description: 'Test description 2',
+        },
       ];
 
       mockPrismaService.forfait.findMany.mockResolvedValue(expectedForfaits);

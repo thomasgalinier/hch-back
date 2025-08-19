@@ -4,6 +4,6 @@ import { ForfaitService } from './forfait.service';
 
 @Module({
   controllers: [ForfaitController],
-  providers: [ForfaitService]
+  providers: [ForfaitService],
 })
 export class ForfaitModule {}

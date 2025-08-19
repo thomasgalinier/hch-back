@@ -8,8 +8,14 @@ class GeoJSONPolygonDto {
   @ApiProperty({
     description: 'Coordonnées GeoJSON [ [ [lng, lat], ... ] ]',
     example: [
-      [ [2.35, 48.85], [2.36, 48.85], [2.36, 48.86], [2.35, 48.86], [2.35, 48.85] ]
-    ]
+      [
+        [2.35, 48.85],
+        [2.36, 48.85],
+        [2.36, 48.86],
+        [2.35, 48.86],
+        [2.35, 48.85],
+      ],
+    ],
   })
   coordinates: number[][][];
 }
@@ -24,7 +30,10 @@ export class CreateZoneDto {
   readonly polygone: GeoJSONPolygonDto;
 
   @IsOptional()
-  @ApiPropertyOptional({ description: 'Identifiant du technicien assigné', nullable: true })
+  @ApiPropertyOptional({
+    description: 'Identifiant du technicien assigné',
+    nullable: true,
+  })
   readonly idTechnicien: string | null;
 
   @IsNotEmpty()
