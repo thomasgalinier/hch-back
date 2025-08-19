@@ -9,6 +9,8 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  // Global prefix for all API routes
+  app.setGlobalPrefix('api');
   
   // Configuration Swagger
   const config = new DocumentBuilder()
@@ -34,7 +36,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
   await app.listen(process.env.PORT || 8081, '0.0.0.0');
   
-  console.log(`🚀 Application is running on: http://localhost:${process.env.PORT || 8081}`);
+  console.log(`🚀 Application is running on: http://localhost:${process.env.PORT || 8081}/api`);
   console.log(`📚 Swagger documentation available at: http://localhost:${process.env.PORT || 8081}/api`);
 }
 bootstrap();
