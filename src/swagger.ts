@@ -7,7 +7,9 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, { logger: false });
   const config = new DocumentBuilder()
     .setTitle('Home Cycle Home API')
-    .setDescription('API pour la gestion des interventions de réparation de vélos à domicile')
+    .setDescription(
+      'API pour la gestion des interventions de réparation de vélos à domicile',
+    )
     .setVersion('1.0')
     .addTag('intervention', 'Gestion des interventions')
     .addTag('auth', 'Authentification')
@@ -35,10 +37,16 @@ async function bootstrap() {
         (paths as any)[path] = filtered;
       }
     }
-    outDoc = { ...document, tags: document.tags?.filter(t => t.name === tag), paths } as OpenAPIObject;
+    outDoc = {
+      ...document,
+      tags: document.tags?.filter((t) => t.name === tag),
+      paths,
+    } as OpenAPIObject;
   }
 
-  writeFileSync(outFile, JSON.stringify(outDoc, null, 2), { encoding: 'utf-8' });
+  writeFileSync(outFile, JSON.stringify(outDoc, null, 2), {
+    encoding: 'utf-8',
+  });
   await app.close();
 }
 

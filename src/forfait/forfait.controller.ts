@@ -1,35 +1,45 @@
-import { Body, Controller, Delete, Get, Post, Put, Req, UseGuards, Param } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Post,
+  Put,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { ForfaitService } from './forfait.service';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../common/middleware/role.middleware';
 import { Roles } from '../common/decorator/role.decorator';
 import { CreateForfaitDto } from './dto/createForfaitDto';
 import { Request } from 'express';
-import { 
-  ApiTags, 
-  ApiOperation, 
-  ApiResponse, 
-  ApiBody, 
-  ApiParam, 
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBody,
+  ApiParam,
   ApiBearerAuth,
   ApiUnauthorizedResponse,
   ApiForbiddenResponse,
   ApiNotFoundResponse,
-  ApiBadRequestResponse
+  ApiBadRequestResponse,
 } from '@nestjs/swagger';
 
 @ApiTags('Forfaits')
 @ApiBearerAuth()
 @Controller('forfait')
 export class ForfaitController {
-  constructor(private readonly forfaitService: ForfaitService) { }
+  constructor(private readonly forfaitService: ForfaitService) {}
 
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'Récupérer tous les forfaits',
-    description: 'Récupère la liste de tous les forfaits disponibles. Nécessite les droits ADMIN ou SUPER_ADMIN.'
+    description:
+      'Récupère la liste de tous les forfaits disponibles. Nécessite les droits ADMIN ou SUPER_ADMIN.',
   })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'Liste des forfaits récupérée avec succès',
     schema: {
       type: 'array',
@@ -39,36 +49,61 @@ export class ForfaitController {
           id: { type: 'string', description: 'ID unique du forfait' },
           titre: { type: 'string', description: 'Titre du forfait' },
           prix: { type: 'number', description: 'Prix du forfait en euros' },
-          description: { type: 'string', description: 'Description détaillée du forfait' },
+          description: {
+            type: 'string',
+            description: 'Description détaillée du forfait',
+          },
           type: { type: 'string', description: 'Type de forfait' },
-          categorie_velo: { type: 'string', description: 'Catégorie de vélo concernée' },
-          duree: { type: 'string', description: 'Durée du forfait (format lisible)' },
-          formatted_duree: { type: 'number', description: 'Durée du forfait en millisecondes' },
-          createdAt: { type: 'string', format: 'date-time', description: 'Date de création' },
-          updatedAt: { type: 'string', format: 'date-time', description: 'Date de dernière modification' }
-        }
-      }
-    }
+          categorie_velo: {
+            type: 'string',
+            description: 'Catégorie de vélo concernée',
+          },
+          duree: {
+            type: 'string',
+            description: 'Durée du forfait (format lisible)',
+          },
+          formatted_duree: {
+            type: 'number',
+            description: 'Durée du forfait en millisecondes',
+          },
+          createdAt: {
+            type: 'string',
+            format: 'date-time',
+            description: 'Date de création',
+          },
+          updatedAt: {
+            type: 'string',
+            format: 'date-time',
+            description: 'Date de dernière modification',
+          },
+        },
+      },
+    },
   })
-  @ApiUnauthorizedResponse({ description: 'Token d\'authentification manquant ou invalide' })
-  @ApiForbiddenResponse({ description: 'Droits insuffisants (ADMIN ou SUPER_ADMIN requis)' })
+  @ApiUnauthorizedResponse({
+    description: "Token d'authentification manquant ou invalide",
+  })
+  @ApiForbiddenResponse({
+    description: 'Droits insuffisants (ADMIN ou SUPER_ADMIN requis)',
+  })
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('ADMIN', 'SUPER_ADMIN')
   @Get('/')
   getForfait() {
-    return this.forfaitService.getForfait()
+    return this.forfaitService.getForfait();
   }
-  
-  @ApiOperation({ 
+
+  @ApiOperation({
     summary: 'Créer un nouveau forfait',
-    description: 'Crée un nouveau forfait avec les informations fournies. Nécessite les droits ADMIN ou SUPER_ADMIN.'
+    description:
+      'Crée un nouveau forfait avec les informations fournies. Nécessite les droits ADMIN ou SUPER_ADMIN.',
   })
-  @ApiBody({ 
+  @ApiBody({
     type: CreateForfaitDto,
-    description: 'Données du forfait à créer'
+    description: 'Données du forfait à créer',
   })
-  @ApiResponse({ 
-    status: 201, 
+  @ApiResponse({
+    status: 201,
     description: 'Forfait créé avec succès',
     schema: {
       type: 'object',
@@ -76,36 +111,61 @@ export class ForfaitController {
         id: { type: 'string', description: 'ID unique du forfait créé' },
         titre: { type: 'string', description: 'Titre du forfait' },
         prix: { type: 'number', description: 'Prix du forfait en euros' },
-        description: { type: 'string', description: 'Description détaillée du forfait' },
+        description: {
+          type: 'string',
+          description: 'Description détaillée du forfait',
+        },
         type: { type: 'string', description: 'Type de forfait' },
-        categorie_velo: { type: 'string', description: 'Catégorie de vélo concernée' },
-        duree: { type: 'string', description: 'Durée du forfait (format lisible)' },
-        formatted_duree: { type: 'number', description: 'Durée du forfait en millisecondes' },
-        createdAt: { type: 'string', format: 'date-time', description: 'Date de création' },
-        updatedAt: { type: 'string', format: 'date-time', description: 'Date de dernière modification' }
-      }
-    }
+        categorie_velo: {
+          type: 'string',
+          description: 'Catégorie de vélo concernée',
+        },
+        duree: {
+          type: 'string',
+          description: 'Durée du forfait (format lisible)',
+        },
+        formatted_duree: {
+          type: 'number',
+          description: 'Durée du forfait en millisecondes',
+        },
+        createdAt: {
+          type: 'string',
+          format: 'date-time',
+          description: 'Date de création',
+        },
+        updatedAt: {
+          type: 'string',
+          format: 'date-time',
+          description: 'Date de dernière modification',
+        },
+      },
+    },
   })
   @ApiBadRequestResponse({ description: 'Données invalides ou manquantes' })
-  @ApiUnauthorizedResponse({ description: 'Token d\'authentification manquant ou invalide' })
-  @ApiForbiddenResponse({ description: 'Droits insuffisants (ADMIN ou SUPER_ADMIN requis)' })
+  @ApiUnauthorizedResponse({
+    description: "Token d'authentification manquant ou invalide",
+  })
+  @ApiForbiddenResponse({
+    description: 'Droits insuffisants (ADMIN ou SUPER_ADMIN requis)',
+  })
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('ADMIN', 'SUPER_ADMIN')
   @Post('/create')
   createForfait(@Body() createForfaitDto: CreateForfaitDto) {
-    return this.forfaitService.createForfait(createForfaitDto)
+    return this.forfaitService.createForfait(createForfaitDto);
   }
 
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'Mettre à jour un forfait',
-    description: 'Met à jour les informations d\'un forfait existant. Nécessite les droits ADMIN ou SUPER_ADMIN.'
+    description:
+      "Met à jour les informations d'un forfait existant. Nécessite les droits ADMIN ou SUPER_ADMIN.",
   })
-  @ApiParam({ 
-    name: 'id', 
-    type: 'string', 
-    description: 'ID unique du forfait à mettre à jour' 
+  @ApiParam({
+    name: 'id',
+    type: 'string',
+    description: 'ID unique du forfait à mettre à jour',
   })
-  @ApiBody({ 
+  @ApiBody({
     description: 'Nouvelles données du forfait',
     schema: {
       type: 'object',
@@ -114,18 +174,30 @@ export class ForfaitController {
           type: 'object',
           properties: {
             titre: { type: 'string', description: 'Titre du forfait' },
-            prix: { type: 'string', description: 'Prix du forfait (sera converti en nombre)' },
-            description: { type: 'string', description: 'Description détaillée du forfait' },
+            prix: {
+              type: 'string',
+              description: 'Prix du forfait (sera converti en nombre)',
+            },
+            description: {
+              type: 'string',
+              description: 'Description détaillée du forfait',
+            },
             type: { type: 'string', description: 'Type de forfait' },
-            categorie_velo: { type: 'string', description: 'Catégorie de vélo concernée' },
-            duree: { type: 'string', description: 'Durée du forfait (format lisible)' }
-          }
-        }
-      }
-    }
+            categorie_velo: {
+              type: 'string',
+              description: 'Catégorie de vélo concernée',
+            },
+            duree: {
+              type: 'string',
+              description: 'Durée du forfait (format lisible)',
+            },
+          },
+        },
+      },
+    },
   })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'Forfait mis à jour avec succès',
     schema: {
       type: 'object',
@@ -133,38 +205,63 @@ export class ForfaitController {
         id: { type: 'string', description: 'ID unique du forfait' },
         titre: { type: 'string', description: 'Titre du forfait' },
         prix: { type: 'number', description: 'Prix du forfait en euros' },
-        description: { type: 'string', description: 'Description détaillée du forfait' },
+        description: {
+          type: 'string',
+          description: 'Description détaillée du forfait',
+        },
         type: { type: 'string', description: 'Type de forfait' },
-        categorie_velo: { type: 'string', description: 'Catégorie de vélo concernée' },
-        duree: { type: 'string', description: 'Durée du forfait (format lisible)' },
-        formatted_duree: { type: 'number', description: 'Durée du forfait en millisecondes' },
-        createdAt: { type: 'string', format: 'date-time', description: 'Date de création' },
-        updatedAt: { type: 'string', format: 'date-time', description: 'Date de dernière modification' }
-      }
-    }
+        categorie_velo: {
+          type: 'string',
+          description: 'Catégorie de vélo concernée',
+        },
+        duree: {
+          type: 'string',
+          description: 'Durée du forfait (format lisible)',
+        },
+        formatted_duree: {
+          type: 'number',
+          description: 'Durée du forfait en millisecondes',
+        },
+        createdAt: {
+          type: 'string',
+          format: 'date-time',
+          description: 'Date de création',
+        },
+        updatedAt: {
+          type: 'string',
+          format: 'date-time',
+          description: 'Date de dernière modification',
+        },
+      },
+    },
   })
   @ApiBadRequestResponse({ description: 'Données invalides ou ID manquant' })
   @ApiNotFoundResponse({ description: 'Forfait non trouvé' })
-  @ApiUnauthorizedResponse({ description: 'Token d\'authentification manquant ou invalide' })
-  @ApiForbiddenResponse({ description: 'Droits insuffisants (ADMIN ou SUPER_ADMIN requis)' })
+  @ApiUnauthorizedResponse({
+    description: "Token d'authentification manquant ou invalide",
+  })
+  @ApiForbiddenResponse({
+    description: 'Droits insuffisants (ADMIN ou SUPER_ADMIN requis)',
+  })
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('ADMIN', 'SUPER_ADMIN')
   @Put('/update/:id')
   updateForfait(@Req() request: Request) {
-    return this.forfaitService.updateForfait(request)
+    return this.forfaitService.updateForfait(request);
   }
 
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'Supprimer un forfait',
-    description: 'Supprime définitivement un forfait existant. Nécessite les droits ADMIN ou SUPER_ADMIN.'
+    description:
+      'Supprime définitivement un forfait existant. Nécessite les droits ADMIN ou SUPER_ADMIN.',
   })
-  @ApiParam({ 
-    name: 'id', 
-    type: 'string', 
-    description: 'ID unique du forfait à supprimer' 
+  @ApiParam({
+    name: 'id',
+    type: 'string',
+    description: 'ID unique du forfait à supprimer',
   })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'Forfait supprimé avec succès',
     schema: {
       type: 'object',
@@ -172,23 +269,44 @@ export class ForfaitController {
         id: { type: 'string', description: 'ID du forfait supprimé' },
         titre: { type: 'string', description: 'Titre du forfait supprimé' },
         prix: { type: 'number', description: 'Prix du forfait supprimé' },
-        description: { type: 'string', description: 'Description du forfait supprimé' },
+        description: {
+          type: 'string',
+          description: 'Description du forfait supprimé',
+        },
         type: { type: 'string', description: 'Type du forfait supprimé' },
-        categorie_velo: { type: 'string', description: 'Catégorie de vélo du forfait supprimé' },
+        categorie_velo: {
+          type: 'string',
+          description: 'Catégorie de vélo du forfait supprimé',
+        },
         duree: { type: 'string', description: 'Durée du forfait supprimé' },
-        formatted_duree: { type: 'number', description: 'Durée formatée du forfait supprimé' },
-        createdAt: { type: 'string', format: 'date-time', description: 'Date de création' },
-        updatedAt: { type: 'string', format: 'date-time', description: 'Date de dernière modification' }
-      }
-    }
+        formatted_duree: {
+          type: 'number',
+          description: 'Durée formatée du forfait supprimé',
+        },
+        createdAt: {
+          type: 'string',
+          format: 'date-time',
+          description: 'Date de création',
+        },
+        updatedAt: {
+          type: 'string',
+          format: 'date-time',
+          description: 'Date de dernière modification',
+        },
+      },
+    },
   })
   @ApiNotFoundResponse({ description: 'Forfait non trouvé' })
-  @ApiUnauthorizedResponse({ description: 'Token d\'authentification manquant ou invalide' })
-  @ApiForbiddenResponse({ description: 'Droits insuffisants (ADMIN ou SUPER_ADMIN requis)' })
+  @ApiUnauthorizedResponse({
+    description: "Token d'authentification manquant ou invalide",
+  })
+  @ApiForbiddenResponse({
+    description: 'Droits insuffisants (ADMIN ou SUPER_ADMIN requis)',
+  })
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('ADMIN', 'SUPER_ADMIN')
   @Delete('/delete/:id')
   deleteForfait(@Req() request: Request) {
-    return this.forfaitService.deleteForfait(request)
+    return this.forfaitService.deleteForfait(request);
   }
 }

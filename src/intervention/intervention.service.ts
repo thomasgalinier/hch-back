@@ -1,7 +1,10 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { formatInTimeZone } from 'date-fns-tz';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateInterventionDto } from './dto/createIntervention.dto';
 import { UpdateInterventionDto } from './dto/updateIntervention.dto';
 import { BulkCreateEmptyInterventionsDto } from './dto/bulkCreateEmptyInterventions.dto';
 import { DeleteInterventionsRangeDto } from './dto/deleteInterventionsRange.dto';
@@ -10,9 +13,6 @@ import { DeleteInterventionResponseDto } from './dto/deleteIntervention.dto';
 @Injectable()
 export class InterventionService {
   constructor(private prisma: PrismaService) {}
-
-
-
 
   /**
    * Récupère toutes les interventions d'un technicien (avec client, zone et forfaits)
@@ -31,13 +31,36 @@ export class InterventionService {
       where: { technicien_id },
       orderBy: { debut: 'asc' },
       include: {
-        client: { select: { id: true, nom: true, prenom: true, email: true, telephone: true } },
-        technicien: { select: { id: true, nom: true, prenom: true, email: true, telephone: true } },
+        client: {
+          select: {
+            id: true,
+            nom: true,
+            prenom: true,
+            email: true,
+            telephone: true,
+          },
+        },
+        technicien: {
+          select: {
+            id: true,
+            nom: true,
+            prenom: true,
+            email: true,
+            telephone: true,
+          },
+        },
         zone: { select: { id: true, nom: true, color: true } },
         forfait_interventions: {
           include: {
             forfait: {
-              select: { id: true, titre: true, prix: true, description: true, duree: true, formatted_duree: true },
+              select: {
+                id: true,
+                titre: true,
+                prix: true,
+                description: true,
+                duree: true,
+                formatted_duree: true,
+              },
             },
           },
         },
@@ -46,7 +69,8 @@ export class InterventionService {
 
     // Adapter le format pour correspondre au DTO (un seul forfait_intervention attendu)
     return interventions.map((i) => {
-      const fmt = (d: Date) => formatInTimeZone(d, 'Europe/Paris', "yyyy-MM-dd'T'HH:mm:ssXXX");
+      const fmt = (d: Date) =>
+        formatInTimeZone(d, 'Europe/Paris', "yyyy-MM-dd'T'HH:mm:ssXXX");
       return {
         id: i.id,
         debut: fmt(i.debut),
@@ -79,17 +103,28 @@ export class InterventionService {
   /**
    * Supprime une intervention par ID, en nettoyant également la table Forfait_Intervention liée.
    */
-  async deleteInterventionById(id: string): Promise<DeleteInterventionResponseDto> {
-    const exist = await this.prisma.intervention.findUnique({ where: { id }, select: { id: true } });
+  async deleteInterventionById(
+    id: string,
+  ): Promise<DeleteInterventionResponseDto> {
+    const exist = await this.prisma.intervention.findUnique({
+      where: { id },
+      select: { id: true },
+    });
     if (!exist) throw new NotFoundException('Intervention introuvable');
 
     const result = await this.prisma.$transaction(async (tx) => {
-      const forfaitDelete = await tx.forfait_Intervention.deleteMany({ where: { id_intervention: id } });
+      const forfaitDelete = await tx.forfait_Intervention.deleteMany({
+        where: { id_intervention: id },
+      });
       await tx.intervention.delete({ where: { id } });
       return { forfaitDeleteCount: forfaitDelete.count };
     });
 
-    return { id, deleted: true, deletedForfaitsCount: result.forfaitDeleteCount };
+    return {
+      id,
+      deleted: true,
+      deletedForfaitsCount: result.forfaitDeleteCount,
+    };
   }
 
   /**
@@ -98,42 +133,64 @@ export class InterventionService {
   async updateIntervention(id: string, payload: UpdateInterventionDto) {
     const exist = await this.prisma.intervention.findUnique({
       where: { id },
-      include: { zone: { include: { technicien: true } }, forfait_interventions: true },
+      include: {
+        zone: { include: { technicien: true } },
+        forfait_interventions: true,
+      },
     });
     if (!exist) throw new NotFoundException('Intervention introuvable');
 
     // Préparer les valeurs
-    let newTechnicienId = payload.technicien_id ?? exist.technicien_id;
-    let newZoneId = payload.zone_id ?? exist.zone_id;
-    const newClientId = payload.client_id === undefined ? exist.client_id : payload.client_id;
+    const newTechnicienId = payload.technicien_id ?? exist.technicien_id;
+    const newZoneId = payload.zone_id ?? exist.zone_id;
+    const newClientId =
+      payload.client_id === undefined ? exist.client_id : payload.client_id;
 
     // Valider technicien si modifié
     if (payload.technicien_id) {
-      const tech = await this.prisma.utilisateur.findFirst({ where: { id: payload.technicien_id, role: 'TECHNICIEN' } });
+      const tech = await this.prisma.utilisateur.findFirst({
+        where: { id: payload.technicien_id, role: 'TECHNICIEN' },
+      });
       if (!tech) throw new BadRequestException('Technicien invalide');
     }
 
     // Valider client si fourni (peut être null -> détacher)
     if (payload.client_id !== undefined && payload.client_id !== null) {
-      const client = await this.prisma.utilisateur.findFirst({ where: { id: payload.client_id, role: 'CLIENT' } });
+      const client = await this.prisma.utilisateur.findFirst({
+        where: { id: payload.client_id, role: 'CLIENT' },
+      });
       if (!client) throw new BadRequestException('Client invalide');
     }
 
     // Valider zone si modifiée
     if (payload.zone_id) {
-      const zone = await this.prisma.zone.findUnique({ where: { id: payload.zone_id }, include: { technicien: true } });
+      const zone = await this.prisma.zone.findUnique({
+        where: { id: payload.zone_id },
+        include: { technicien: true },
+      });
       if (!zone) throw new BadRequestException('Zone invalide');
       // S'assurer que la zone est assignée au technicien ciblé
       const targetTech = newTechnicienId;
       if (!zone.technicien || zone.technicien.id !== targetTech) {
-        throw new BadRequestException('Le technicien n\'est pas assigné à la zone');
+        throw new BadRequestException(
+          "Le technicien n'est pas assigné à la zone",
+        );
       }
     } else {
       // Si seul le technicien change, vérifier la cohérence avec la zone actuelle
       if (payload.technicien_id) {
-        const zone = await this.prisma.zone.findUnique({ where: { id: newZoneId }, include: { technicien: true } });
-        if (!zone || !zone.technicien || zone.technicien.id !== newTechnicienId) {
-          throw new BadRequestException('Le technicien n\'est pas assigné à la zone');
+        const zone = await this.prisma.zone.findUnique({
+          where: { id: newZoneId },
+          include: { technicien: true },
+        });
+        if (
+          !zone ||
+          !zone.technicien ||
+          zone.technicien.id !== newTechnicienId
+        ) {
+          throw new BadRequestException(
+            "Le technicien n'est pas assigné à la zone",
+          );
         }
       }
     }
@@ -144,7 +201,8 @@ export class InterventionService {
     if (isNaN(newDebut.getTime()) || isNaN(newFin.getTime())) {
       throw new BadRequestException('Dates invalides');
     }
-    if (newFin <= newDebut) throw new BadRequestException('La fin doit être après le début');
+    if (newFin <= newDebut)
+      throw new BadRequestException('La fin doit être après le début');
 
     // Conflits horaires sur le technicien
     const conflict = await this.prisma.intervention.findFirst({
@@ -158,7 +216,9 @@ export class InterventionService {
       select: { id: true },
     });
     if (conflict) {
-      throw new BadRequestException('Conflit avec une autre intervention du technicien');
+      throw new BadRequestException(
+        'Conflit avec une autre intervention du technicien',
+      );
     }
 
     // Appliquer la mise à jour principale
@@ -178,7 +238,9 @@ export class InterventionService {
 
     // Gérer le forfait lié si demandé
     if (payload.forfait_id) {
-      const forfait = await this.prisma.forfait.findUnique({ where: { id: payload.forfait_id } });
+      const forfait = await this.prisma.forfait.findUnique({
+        where: { id: payload.forfait_id },
+      });
       if (!forfait) throw new BadRequestException('Forfait invalide');
 
       const existingFi = exist.forfait_interventions[0];
@@ -207,20 +269,44 @@ export class InterventionService {
     const updated = await this.prisma.intervention.findUnique({
       where: { id },
       include: {
-        client: { select: { id: true, nom: true, prenom: true, email: true, telephone: true } },
-        technicien: { select: { id: true, nom: true, prenom: true, email: true, telephone: true } },
+        client: {
+          select: {
+            id: true,
+            nom: true,
+            prenom: true,
+            email: true,
+            telephone: true,
+          },
+        },
+        technicien: {
+          select: {
+            id: true,
+            nom: true,
+            prenom: true,
+            email: true,
+            telephone: true,
+          },
+        },
         zone: { select: { id: true, nom: true, color: true } },
         forfait_interventions: {
           include: {
             forfait: {
-              select: { id: true, titre: true, prix: true, description: true, duree: true, formatted_duree: true },
+              select: {
+                id: true,
+                titre: true,
+                prix: true,
+                description: true,
+                duree: true,
+                formatted_duree: true,
+              },
             },
           },
         },
       },
     });
 
-    const fmt = (d: Date) => formatInTimeZone(d, 'Europe/Paris', "yyyy-MM-dd'T'HH:mm:ssXXX");
+    const fmt = (d: Date) =>
+      formatInTimeZone(d, 'Europe/Paris', "yyyy-MM-dd'T'HH:mm:ssXXX");
     return {
       id: updated.id,
       debut: fmt(updated.debut),
@@ -261,9 +347,9 @@ export class InterventionService {
       date_debut,
       date_fin,
       heure_debut = 8,
-  minute_debut = 0,
+      minute_debut = 0,
       heure_fin = 18,
-  minute_fin = 0,
+      minute_fin = 0,
       duree_minutes = 60,
     } = payload;
 
@@ -273,7 +359,10 @@ export class InterventionService {
     });
     if (!tech) throw new BadRequestException('Technicien introuvable');
 
-    const zone = await this.prisma.zone.findUnique({ where: { id: zone_id }, include: { technicien: true } });
+    const zone = await this.prisma.zone.findUnique({
+      where: { id: zone_id },
+      include: { technicien: true },
+    });
     if (!zone) throw new BadRequestException('Zone introuvable');
     if (!zone.technicien || zone.technicien.id !== technicien_id) {
       throw new BadRequestException('Technicien non assigné à la zone');
@@ -285,7 +374,8 @@ export class InterventionService {
     if (isNaN(start.getTime()) || isNaN(end.getTime())) {
       throw new BadRequestException('Dates invalides');
     }
-    if (end < start) throw new BadRequestException('date_fin doit être >= date_debut');
+    if (end < start)
+      throw new BadRequestException('date_fin doit être >= date_debut');
 
     // Précharger les interventions existantes du technicien dans l'intervalle
     const dayStart = new Date(start);
@@ -293,10 +383,10 @@ export class InterventionService {
     const dayEnd = new Date(end);
     dayEnd.setHours(23, 59, 59, 999);
 
-  const existing = await this.prisma.intervention.findMany({
+    const existing = await this.prisma.intervention.findMany({
       where: {
         technicien_id,
-    statut: { in: ['PLANNED', 'IN_PROGRESS', 'UNPLANNED'] },
+        statut: { in: ['PLANNED', 'IN_PROGRESS', 'UNPLANNED'] },
         OR: [
           {
             debut: { lt: dayEnd },
@@ -315,10 +405,10 @@ export class InterventionService {
     while (iter <= end) {
       // On travaille sur ce jour calendaire
       const base = new Date(iter);
-  const daySlotStart = new Date(base);
-  daySlotStart.setHours(heure_debut, minute_debut, 0, 0);
-  const dayEndLimit = new Date(base);
-  dayEndLimit.setHours(heure_fin, minute_fin, 0, 0);
+      const daySlotStart = new Date(base);
+      daySlotStart.setHours(heure_debut, minute_debut, 0, 0);
+      const dayEndLimit = new Date(base);
+      dayEndLimit.setHours(heure_fin, minute_fin, 0, 0);
 
       for (let t = new Date(daySlotStart); t < dayEndLimit; ) {
         const slotStart = new Date(t);
@@ -329,7 +419,9 @@ export class InterventionService {
         if (slotEnd > dayEndLimit) break;
 
         // Chevauchement avec existant ?
-        const overlap = existing.some((e) => slotStart < e.fin && slotEnd > e.debut);
+        const overlap = existing.some(
+          (e) => slotStart < e.fin && slotEnd > e.debut,
+        );
         if (overlap) {
           skippedCount++;
         } else {
@@ -402,7 +494,11 @@ export class InterventionService {
     });
 
     if (interventions.length === 0) {
-      return { deletedInterventionsCount: 0, deletedForfaitsCount: 0, interventionIds: [] };
+      return {
+        deletedInterventionsCount: 0,
+        deletedForfaitsCount: 0,
+        interventionIds: [],
+      };
     }
 
     const ids = interventions.map((i) => i.id);

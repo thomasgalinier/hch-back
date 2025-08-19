@@ -8,8 +8,14 @@ class GeoJSONPolygon {
   @ApiProperty({
     description: 'Coordonnées GeoJSON [ [ [lng, lat], ... ] ]',
     example: [
-      [ [2.35, 48.85], [2.36, 48.85], [2.36, 48.86], [2.35, 48.86], [2.35, 48.85] ]
-    ]
+      [
+        [2.35, 48.85],
+        [2.36, 48.85],
+        [2.36, 48.86],
+        [2.35, 48.86],
+        [2.35, 48.85],
+      ],
+    ],
   })
   coordinates: number[][][];
 }

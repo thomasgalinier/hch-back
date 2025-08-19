@@ -2,7 +2,10 @@ import { ApiProperty } from '@nestjs/swagger';
 import { UserDto } from './user.dto';
 
 export class SignupResponseDto {
-  @ApiProperty({ description: 'JWT à utiliser en Authorization: Bearer <token>', example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' })
+  @ApiProperty({
+    description: 'JWT à utiliser en Authorization: Bearer <token>',
+    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+  })
   token: string;
 
   @ApiProperty({ type: UserDto })

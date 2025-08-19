@@ -51,7 +51,12 @@ describe('ForfaitController', () => {
     it('should return all forfaits', async () => {
       const expectedResult = [
         { id: '1', titre: 'Forfait 1', prix: 50, description: 'Description 1' },
-        { id: '2', titre: 'Forfait 2', prix: 100, description: 'Description 2' },
+        {
+          id: '2',
+          titre: 'Forfait 2',
+          prix: 100,
+          description: 'Description 2',
+        },
       ];
       mockForfaitService.getForfait.mockResolvedValue(expectedResult);
 
@@ -89,7 +94,9 @@ describe('ForfaitController', () => {
       const result = await controller.createForfait(createForfaitDto);
 
       expect(result).toBe(createdForfait);
-      expect(mockForfaitService.createForfait).toHaveBeenCalledWith(createForfaitDto);
+      expect(mockForfaitService.createForfait).toHaveBeenCalledWith(
+        createForfaitDto,
+      );
     });
   });
 
