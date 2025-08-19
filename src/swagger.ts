@@ -11,7 +11,6 @@ async function bootstrap() {
     .setVersion('1.0')
     .addTag('intervention', 'Gestion des interventions')
     .addTag('auth', 'Authentification')
-    .addTag('forfait', 'Gestion des forfaits')
     .addTag('carte', 'Gestion des zones')
     .addBearerAuth()
     .addCookieAuth('token')
