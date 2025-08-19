@@ -48,6 +48,7 @@ export class AuthController {
   signup(@Body() signupDto: SignupDto) {
     return this.authService.signup(signupDto);
   }
+
   @Post('signin')
   @ApiOperation({
     summary: 'Se connecter (cookie HttpOnly fixé)',
@@ -65,6 +66,7 @@ export class AuthController {
   ) {
     return this.authService.signin(signinDto, res);
   }
+
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('ADMIN', 'TECHNICIEN', 'SUPER_ADMIN')
   @Get('all')
@@ -75,7 +77,9 @@ export class AuthController {
   getAll() {
     return this.authService.getAll();
   }
-  @UseGuards(AuthGuard('jwt'))
+
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('ADMIN', 'SUPER_ADMIN')
   @Delete('delete/:id')
   @ApiOperation({ summary: 'Supprimer un utilisateur (ADMIN uniquement)' })
   @ApiBearerAuth()
@@ -85,7 +89,9 @@ export class AuthController {
   delete(@Req() request: Request) {
     return this.authService.delete(request);
   }
-  @UseGuards(AuthGuard('jwt'))
+
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('ADMIN', 'SUPER_ADMIN')
   @Put('update/:id')
   @ApiOperation({ summary: 'Mettre à jour un utilisateur (ADMIN uniquement)' })
   @ApiBearerAuth()
@@ -100,7 +106,9 @@ export class AuthController {
   update(@Req() request: Request) {
     return this.authService.update(request);
   }
-  @UseGuards(AuthGuard('jwt'))
+
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('ADMIN', 'SUPER_ADMIN', 'TECHNICIEN', 'CLIENT')
   @Get('me')
   @ApiOperation({ summary: 'Obtenir l’utilisateur courant (depuis le JWT)' })
   @ApiBearerAuth()
@@ -109,10 +117,10 @@ export class AuthController {
   getMe(@Req() request: Request) {
     return request.user;
   }
-  @UseGuards(AuthGuard('jwt'))
-  @Get('technicien')
+
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('ADMIN', 'SUPER_ADMIN')
+  @Get('technicien')
   @ApiOperation({ summary: 'Lister les techniciens' })
   @ApiBearerAuth()
   @ApiCookieAuth('token')
@@ -131,6 +139,7 @@ export class AuthController {
   getClient() {
     return this.authService.getClient();
   }
+
   @Post('logout')
   @ApiOperation({ summary: 'Se déconnecter (cookie supprimé)' })
   @ApiResponse({ status: 200, type: LogoutResponseDto })

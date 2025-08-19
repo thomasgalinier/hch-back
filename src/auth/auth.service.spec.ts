@@ -201,10 +201,6 @@ describe('AuthService (unit)', () => {
       expect(out).toEqual({ id: '1' });
     });
 
-    it('refuse si rôle non autorisé', () => {
-      const req: any = { user: { role: 'CLIENT' }, params: { id: '1' } };
-      expect(() => service.delete(req)).toThrow(UnauthorizedException);
-    });
   });
 
   describe('update', () => {
@@ -223,14 +219,6 @@ describe('AuthService (unit)', () => {
       expect(out).toEqual({ id: '1', nom: 'Jane' });
     });
 
-    it('refuse si rôle non autorisé', () => {
-      const req: any = {
-        user: { role: 'CLIENT' },
-        params: { id: '1' },
-        body: {},
-      };
-      expect(() => service.update(req)).toThrow(UnauthorizedException);
-    });
   });
 
   describe('getTechnicien / getClient', () => {
