@@ -1,6 +1,9 @@
+version: '3.8'
+
 services:
   db:
     image: postgis/postgis:13-3.3-alpine
+    container_name: postgres_container
     env_file:
       - ../.env  # Contient POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB, etc. (non versionné)
     environment:
@@ -17,6 +20,7 @@ services:
   backend:
     build:
       context: ../  # On suppose que Dockerfile est dans le dossier parent
+    container_name: nest_backend
     restart: always
     depends_on:
       - db
@@ -29,7 +33,7 @@ services:
       NODE_ENV: ${NODE_ENV:-production}
       PORT: ${PORT:-3001}
     ports:
-      - ${PORT:-3001}:${PORT:-3001}  # En prod, idéalement derrière un reverse proxy (nginx) et/ou lié à 127.0.0.1
+      - "3001:3001"  # En prod, idéalement derrière un reverse proxy (nginx) et/ou lié à 127.0.0.1
     command: sh -c "npx prisma migrate deploy && node dist/src/main.js"
     networks:
       - my_network
