@@ -8,29 +8,40 @@ import * as cookieParser from 'cookie-parser';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const isProd = process.env.NODE_ENV === 'production';
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    logger: isProd ? ['error', 'warn', 'log'] : ['debug', 'error', 'warn', 'log', 'verbose'],
+  });
   // Global prefix for all API routes
   app.setGlobalPrefix('api');
 
   // Configuration Swagger
-  const config = new DocumentBuilder()
-    .setTitle('Home Cycle Home API')
-    .setDescription(
-      'API pour la gestion des interventions de réparation de vélos à domicile',
-    )
-    .setVersion('1.0')
-    .addTag('intervention', 'Gestion des interventions')
-    .addTag('auth', 'Authentification')
-    .addTag('carte', 'Gestion des zones')
-    .addBearerAuth()
-    .build();
+  if (!isProd) {
+    const config = new DocumentBuilder()
+      .setTitle('Home Cycle Home API')
+      .setDescription(
+        'API pour la gestion des interventions de réparation de vélos à domicile',
+      )
+      .setVersion('1.0')
+      .addTag('intervention', 'Gestion des interventions')
+      .addTag('auth', 'Authentification')
+      .addTag('carte', 'Gestion des zones')
+      .addBearerAuth()
+      .build();
 
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('api', app, document);
+  }
 
   app.use(cookieParser());
   app.enableCors({
-    origin: 'http://localhost:3000',
+    origin: (origin, cb) => {
+      const allowed = (process.env.CORS_ORIGIN || 'http://localhost:3000')
+        .split(',')
+        .map((s) => s.trim());
+      if (!origin || allowed.includes(origin)) return cb(null, true);
+      return cb(new Error('Not allowed by CORS'));
+    },
     credentials: true,
   });
   app.useStaticAssets(join(__dirname, '..', 'uploads'), { prefix: '/uploads' });
