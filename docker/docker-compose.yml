@@ -4,12 +4,14 @@ services:
   db:
     image: postgis/postgis:13-3.3-alpine
     container_name: postgres_container
+    env_file:
+      - ../.env  # Contient POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB, etc. (non versionné)
     environment:
-      POSTGRES_USER: admin  # Nom d'utilisateur de PostgreSQL
-      POSTGRES_PASSWORD: admin  # Mot de passe pour l'utilisateur
-      POSTGRES_DB: hch  # Nom de la base de données à créer
-    ports:
-      - "5432:5432"  # Expose le port 5432 pour accéder à PostgreSQL depuis l'hôte
+      POSTGRES_USER: ${POSTGRES_USER:-admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin}
+      POSTGRES_DB: ${POSTGRES_DB:-hch}
+    # Ne pas exposer la base de données publiquement en production
+    # Supprimez la section ports pour empêcher l'accès externe
     volumes:
       - postgres_data:/var/lib/postgresql/data  # Monte un volume persistant
     networks:
@@ -18,19 +20,20 @@ services:
   backend:
     build:
       context: ../  # On suppose que Dockerfile est dans le dossier parent
-      args:
-        DATABASE_URL: postgres://admin:admin@db:5432/hch
     container_name: nest_backend
     restart: always
     depends_on:
       - db
+    env_file:
+      - ../.env  # Contient DATABASE_URL, SECRET_KEY, NODE_ENV, PORT, CORS_ORIGIN...
     environment:
-      DATABASE_URL: postgres://admin:admin@db:5432/hch
-      SECRET_KEY: supersecretjwtkey
-      NODE_ENV: production
-      PORT: 3001
+      # Valeurs par défaut de secours si absentes dans .env
+      DATABASE_URL: ${DATABASE_URL:-postgres://admin:admin@db:5432/hch}
+      SECRET_KEY: ${SECRET_KEY:-change-me-in-prod}
+      NODE_ENV: ${NODE_ENV:-production}
+      PORT: ${PORT:-3001}
     ports:
-      - "3001:3001"  # Expose le backend NestJS
+      - "3001:3001"  # En prod, idéalement derrière un reverse proxy (nginx) et/ou lié à 127.0.0.1
     command: sh -c "npx prisma migrate deploy && node dist/src/main.js"
     networks:
       - my_network
