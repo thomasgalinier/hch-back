@@ -12,7 +12,10 @@ import { InterventionModule } from './intervention/intervention.module';
 @Module({
   imports: [
     // Load .env.local first if present (for local dev), then fallback to .env (Docker/default)
-    ConfigModule.forRoot({ isGlobal: true, envFilePath: ['.env.local', '.env'] }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: ['.env.local', '.env'],
+    }),
     AuthModule,
     CarteModule,
     PrismaModule,

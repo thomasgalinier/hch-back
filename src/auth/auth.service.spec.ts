@@ -200,7 +200,6 @@ describe('AuthService (unit)', () => {
       });
       expect(out).toEqual({ id: '1' });
     });
-
   });
 
   describe('update', () => {
@@ -218,7 +217,6 @@ describe('AuthService (unit)', () => {
       });
       expect(out).toEqual({ id: '1', nom: 'Jane' });
     });
-
   });
 
   describe('getTechnicien / getClient', () => {

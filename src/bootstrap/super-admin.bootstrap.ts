@@ -19,8 +19,8 @@ export class SuperAdminBootstrapService implements OnModuleInit {
 
   async onModuleInit() {
     try {
-  // Vérifie la présence d'au moins un SUPER_ADMIN
-  const existing = await this.prisma.utilisateur.findFirst({
+      // Vérifie la présence d'au moins un SUPER_ADMIN
+      const existing = await this.prisma.utilisateur.findFirst({
         where: { role: Role.SUPER_ADMIN },
         select: { id: true, email: true },
       });
@@ -30,12 +30,13 @@ export class SuperAdminBootstrapService implements OnModuleInit {
         return;
       }
 
-  // Récupération des credentials du super admin via variables d'environnement
-  const email = this.config.get<string>('SUPERADMIN_EMAIL');
+      // Récupération des credentials du super admin via variables d'environnement
+      const email = this.config.get<string>('SUPERADMIN_EMAIL');
       const password = this.config.get<string>('SUPERADMIN_PASSWORD');
       const nom = this.config.get<string>('SUPERADMIN_LASTNAME') || 'Super';
       const prenom = this.config.get<string>('SUPERADMIN_FIRSTNAME') || 'Admin';
-      const telephone = this.config.get<string>('SUPERADMIN_PHONE') || '0000000000';
+      const telephone =
+        this.config.get<string>('SUPERADMIN_PHONE') || '0000000000';
 
       if (!email || !password) {
         this.logger.warn(
@@ -44,8 +45,8 @@ export class SuperAdminBootstrapService implements OnModuleInit {
         return;
       }
 
-  // Hash du mot de passe (10 rounds par défaut)
-  const hash = await bcrypt.hash(password, 10);
+      // Hash du mot de passe (10 rounds par défaut)
+      const hash = await bcrypt.hash(password, 10);
       const admin = await this.prisma.utilisateur.create({
         data: {
           email,

@@ -22,7 +22,7 @@ export class AuthService {
     });
     if (client) throw new ConflictException('Le client existe déjà');
     const hash = await bcrypt.hash(password, 10);
-        const newClient = await this.prisamService.utilisateur.create({
+    const newClient = await this.prisamService.utilisateur.create({
       data: {
         nom,
         prenom,
@@ -32,19 +32,34 @@ export class AuthService {
         role: 'CLIENT',
       },
     });
+    const payload = { email: newClient.email, sub: newClient.id };
+    const token = this.jwtService.sign(payload, {
+      expiresIn: '1d',
+      secret: this.configService.get('SECRET_KEY'),
+    });
+    return {
+      token,
+      user: {
+        id: newClient.id,
+        email: newClient.email,
+        nom: newClient.nom,
+        prenom: newClient.prenom,
+        telephone: newClient.telephone,
+      },
+    };
   }
   constructor(
     private readonly prisamService: PrismaService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
-  ) { }
+  ) {}
 
   async signup(signupDto: SignupDto) {
     const { email, password, nom, prenom, telephone, role } = signupDto;
     const user = await this.prisamService.utilisateur.findUnique({
       where: { email },
     });
-    if (user) throw new ConflictException('l\'utilisateur existe déjà');
+    if (user) throw new ConflictException("l'utilisateur existe déjà");
     const hash = await bcrypt.hash(password, 10);
 
     const newClient = await this.prisamService.utilisateur.create({

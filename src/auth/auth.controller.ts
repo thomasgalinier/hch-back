@@ -38,7 +38,6 @@ import { ClientSignupDto } from './dto/ClientSignupDto';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  
   @Post('signup')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('SUPER_ADMIN')

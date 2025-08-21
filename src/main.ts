@@ -10,7 +10,9 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 async function bootstrap() {
   const isProd = process.env.NODE_ENV === 'production';
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-    logger: isProd ? ['error', 'warn', 'log'] : ['debug', 'error', 'warn', 'log', 'verbose'],
+    logger: isProd
+      ? ['error', 'warn', 'log']
+      : ['debug', 'error', 'warn', 'log', 'verbose'],
   });
   // Global prefix for all API routes
   app.setGlobalPrefix('api');
