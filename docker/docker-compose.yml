@@ -30,7 +30,7 @@ services:
       PORT: ${PORT:-3001}
     ports:
       - ${PORT:-3001}:${PORT:-3001}  # En prod, idéalement derrière un reverse proxy (nginx) et/ou lié à 127.0.0.1
-    command: sh -c "npx prisma migrate deploy && node dist/src/main.js"
+  command: sh -c "npx prisma migrate deploy && node dist/main.js"
     networks:
       - my_network
 
