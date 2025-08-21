@@ -10,7 +10,9 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 async function bootstrap() {
   const isProd = process.env.NODE_ENV === 'production';
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-    logger: isProd ? ['error', 'warn', 'log'] : ['debug', 'error', 'warn', 'log', 'verbose'],
+    logger: isProd
+      ? ['error', 'warn', 'log']
+      : ['debug', 'error', 'warn', 'log', 'verbose'],
   });
   // Global prefix for all API routes
   app.setGlobalPrefix('api');
@@ -30,7 +32,7 @@ async function bootstrap() {
       .build();
 
     const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup('api', app, document);
+    SwaggerModule.setup('swagger', app, document);
   }
 
   app.use(cookieParser());
@@ -52,7 +54,7 @@ async function bootstrap() {
     `🚀 Application is running on: http://localhost:${process.env.PORT || 8081}/api`,
   );
   console.log(
-    `📚 Swagger documentation available at: http://localhost:${process.env.PORT || 8081}/api`,
+    `📚 Swagger documentation available at: http://localhost:${process.env.PORT || 8081}/swagger`,
   );
 }
 bootstrap();

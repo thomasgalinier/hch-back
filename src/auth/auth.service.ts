@@ -11,9 +11,43 @@ import { SigninDto } from './dto/signinDto';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { Request, Response } from 'express';
+import { ClientSignupDto } from './dto/ClientSignupDto';
 
 @Injectable()
 export class AuthService {
+  async clientSignup(clientSignupDto: ClientSignupDto) {
+    const { email, password, nom, prenom, telephone } = clientSignupDto;
+    const client = await this.prisamService.utilisateur.findUnique({
+      where: { email },
+    });
+    if (client) throw new ConflictException('Le client existe déjà');
+    const hash = await bcrypt.hash(password, 10);
+    const newClient = await this.prisamService.utilisateur.create({
+      data: {
+        nom,
+        prenom,
+        email,
+        password: hash,
+        telephone,
+        role: 'CLIENT',
+      },
+    });
+    const payload = { email: newClient.email, sub: newClient.id };
+    const token = this.jwtService.sign(payload, {
+      expiresIn: '1d',
+      secret: this.configService.get('SECRET_KEY'),
+    });
+    return {
+      token,
+      user: {
+        id: newClient.id,
+        email: newClient.email,
+        nom: newClient.nom,
+        prenom: newClient.prenom,
+        telephone: newClient.telephone,
+      },
+    };
+  }
   constructor(
     private readonly prisamService: PrismaService,
     private readonly jwtService: JwtService,
@@ -22,10 +56,10 @@ export class AuthService {
 
   async signup(signupDto: SignupDto) {
     const { email, password, nom, prenom, telephone, role } = signupDto;
-    const client = await this.prisamService.utilisateur.findUnique({
+    const user = await this.prisamService.utilisateur.findUnique({
       where: { email },
     });
-    if (client) throw new ConflictException('Le client existe déjà');
+    if (user) throw new ConflictException("l'utilisateur existe déjà");
     const hash = await bcrypt.hash(password, 10);
 
     const newClient = await this.prisamService.utilisateur.create({
