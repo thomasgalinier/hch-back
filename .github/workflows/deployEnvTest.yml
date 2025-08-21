@@ -1,4 +1,4 @@
-name: Deploy to VPS
+name: Deploy to VPS test
 
 on:
   push:
@@ -26,5 +26,5 @@ jobs:
             git checkout main
             git pull
             docker compose down -v 
-            docker compose -p hch_back_test up -d --build
+            docker compose --env-file ../.env -p hch_back_test up -d --build
           EOF
