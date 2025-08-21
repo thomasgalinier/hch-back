@@ -21,7 +21,7 @@ jobs:
 
       - name: Deploy to VPS via SSH
         run: |
-          ssh -o StrictHostKeyChecking=no root@217.154.117.179 << 'EOF'
+          ssh -o StrictHostKeyChecking=no deploy@217.154.117.179 << 'EOF'
             cd /var/www/test/hch-back/docker
             git checkout main
             git pull
