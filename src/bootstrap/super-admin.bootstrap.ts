@@ -5,7 +5,6 @@ import { Injectable, Logger } from '@nestjs/common';
 import { OnModuleInit } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ConfigService } from '@nestjs/config';
-import { Role } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -21,7 +20,7 @@ export class SuperAdminBootstrapService implements OnModuleInit {
     try {
       // Vérifie la présence d'au moins un SUPER_ADMIN
       const existing = await this.prisma.utilisateur.findFirst({
-        where: { role: Role.SUPER_ADMIN },
+        where: { role: 'SUPER_ADMIN' },
         select: { id: true, email: true },
       });
 
@@ -47,14 +46,14 @@ export class SuperAdminBootstrapService implements OnModuleInit {
 
       // Hash du mot de passe (10 rounds par défaut)
       const hash = await bcrypt.hash(password, 10);
-      const admin = await this.prisma.utilisateur.create({
+    const admin = await this.prisma.utilisateur.create({
         data: {
           email,
           password: hash,
           nom,
           prenom,
           telephone,
-          role: Role.SUPER_ADMIN,
+      role: 'SUPER_ADMIN',
         },
         select: { id: true, email: true },
       });
