@@ -2,44 +2,39 @@ services:
   db:
     image: postgis/postgis:13-3.3-alpine
     env_file:
-      - ../.env  # Contient POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB, etc. (non versionné)
+      - ../.env
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-admin}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin}
       POSTGRES_DB: ${POSTGRES_DB:-hch}
-    # Ne pas exposer la base de données publiquement en production
-    # Supprimez la section ports pour empêcher l'accès externe
     volumes:
-      - postgres_data:/var/lib/postgresql/data  # Monte un volume persistant
+      - postgres_data:/var/lib/postgresql/data
     networks:
       - my_network
 
   backend:
     build:
-      context: ../  # On suppose que Dockerfile est dans le dossier parent
+      context: ../
     restart: always
     depends_on:
       - db
     env_file:
-      - ../.env  # Contient DATABASE_URL, SECRET_KEY, NODE_ENV, PORT, CORS_ORIGIN...
+      - ../.env
     environment:
-      # Valeurs par défaut de secours si absentes dans .env
       DATABASE_URL: ${DATABASE_URL:-postgres://admin:admin@db:5432/hch}
       SECRET_KEY: ${SECRET_KEY:-change-me-in-prod}
       NODE_ENV: ${NODE_ENV:-production}
       PORT: ${PORT:-3001}
-
-  ports:
-    - ${PORT:-3001}:${PORT:-3001}  # En prod, idéalement derrière un reverse proxy (nginx) et/ou lié à 127.0.0.1
-  command: sh -c "npx prisma migrate deploy && node dist/main.js"
-  networks:
-    - my_network
-
+    ports:
+      - ${PORT:-3001}:${PORT:-3001}
+    command: sh -c "npx prisma migrate deploy && node dist/main.js"
+    networks:
+      - my_network
 
 volumes:
-  postgres_data:  # Définit le volume persistant nommé "postgres_data"
+  postgres_data:
     driver: local
 
 networks:
-  my_network:  # Crée un réseau personnalisé si besoin
+  my_network:
     driver: bridge
