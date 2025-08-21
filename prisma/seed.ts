@@ -1,7 +1,7 @@
 // Script de seed Prisma: crée un SUPER_ADMIN si aucun n'existe.
 // À utiliser en local/CI après les migrations (prisma migrate deploy),
 // basé sur des variables d'environnement pour ne pas hardcoder d'identifiants.
-import { PrismaClient, Role } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import 'dotenv/config';
 import bcrypt from 'bcrypt';
 
@@ -24,7 +24,7 @@ async function main() {
 
   // Si un SUPER_ADMIN existe déjà, on ne fait rien (seed idempotent)
   const existing = await prisma.utilisateur.findFirst({
-    where: { role: Role.SUPER_ADMIN },
+    where: { role: 'SUPER_ADMIN' },
   });
 
   if (existing) {
@@ -42,7 +42,7 @@ async function main() {
       nom,
       prenom,
       telephone,
-      role: Role.SUPER_ADMIN,
+  role: 'SUPER_ADMIN',
     },
   });
 

@@ -7,8 +7,9 @@ RUN npm install
 
 COPY . .
 
-RUN npm run build
+# Génère Prisma Client avant la compilation Nest (tsc n'a pas besoin de prisma/seed.ts)
 RUN npx prisma generate
+RUN npm run build
 
 # === FINAL STAGE ===
 FROM node:18-alpine
