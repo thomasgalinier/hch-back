@@ -31,13 +31,17 @@ import {
   SignupResponseDto,
 } from './dto/auth.response.dto';
 import { UserDto } from './dto/user.dto';
+import { ClientSignupDto } from './dto/ClientSignupDto';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  
   @Post('signup')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('SUPER_ADMIN')
   @ApiOperation({ summary: 'Créer un utilisateur et retourner un token' })
   @ApiBody({ type: SignupDto })
   @ApiResponse({
@@ -47,6 +51,18 @@ export class AuthController {
   })
   signup(@Body() signupDto: SignupDto) {
     return this.authService.signup(signupDto);
+  }
+
+  @Post('/client/signup')
+  @ApiOperation({ summary: 'Créer un client et retourner un token' })
+  @ApiBody({ type: ClientSignupDto })
+  @ApiResponse({
+    status: 201,
+    description: 'Client créé',
+    type: SignupResponseDto,
+  })
+  clientSignup(@Body() clientSignupDto: ClientSignupDto) {
+    return this.authService.clientSignup(clientSignupDto);
   }
 
   @Post('signin')
