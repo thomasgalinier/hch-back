@@ -30,7 +30,7 @@ async function bootstrap() {
       .build();
 
     const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup('api', app, document);
+    SwaggerModule.setup('swagger', app, document);
   }
 
   app.use(cookieParser());
@@ -52,7 +52,7 @@ async function bootstrap() {
     `🚀 Application is running on: http://localhost:${process.env.PORT || 8081}/api`,
   );
   console.log(
-    `📚 Swagger documentation available at: http://localhost:${process.env.PORT || 8081}/api`,
+    `📚 Swagger documentation available at: http://localhost:${process.env.PORT || 8081}/swagger`,
   );
 }
 bootstrap();
