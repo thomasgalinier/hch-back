@@ -32,7 +32,7 @@ services:
       
       SECRET_KEY: ${SECRET_KEY}
       NODE_ENV: ${NODE_ENV:-production}
-    PORT: ${PORT}
+      PORT: ${PORT}
 
     ports:
     - ${PORT}:${PORT}  # En prod, idéalement derrière un reverse proxy (nginx) et/ou lié à 127.0.0.1
