@@ -34,14 +34,14 @@ services:
       NODE_ENV: ${NODE_ENV:-production}
     PORT: ${PORT}
 
-  ports:
+    ports:
     - ${PORT}:${PORT}  # En prod, idéalement derrière un reverse proxy (nginx) et/ou lié à 127.0.0.1
-  command: >
-    sh -c "
-      DATABASE_URL=$ADMIN_DATABASE_URL npx prisma migrate deploy &&
-      node dist/main.js
-    "
-  networks:
+    command: >
+      sh -c "
+        DATABASE_URL=$ADMIN_DATABASE_URL npx prisma migrate deploy &&
+        node dist/main.js
+      "
+    networks:
     - my_network
 
 
