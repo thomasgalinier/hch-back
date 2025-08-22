@@ -15,7 +15,7 @@ import { ClientSignupDto } from './dto/ClientSignupDto';
 
 @Injectable()
 export class AuthService {
-  async clientSignup(clientSignupDto: ClientSignupDto) {
+  async clientSignup(clientSignupDto: ClientSignupDto, res?: Response) {
     const { email, password, nom, prenom, telephone } = clientSignupDto;
     const client = await this.prisamService.utilisateur.findUnique({
       where: { email },
@@ -37,6 +37,15 @@ export class AuthService {
       expiresIn: '1d',
       secret: this.configService.get('SECRET_KEY'),
     });
+    if (res) {
+      const isProd = this.configService.get('NODE_ENV') === 'production';
+      res.cookie('token', token, {
+        httpOnly: true,
+        secure: isProd,
+        sameSite: isProd ? 'none' : 'lax',
+        maxAge: 1000 * 60 * 60 * 24,
+      });
+    }
     return {
       token,
       user: {

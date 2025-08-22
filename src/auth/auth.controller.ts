@@ -60,8 +60,11 @@ export class AuthController {
     description: 'Client créé',
     type: SignupResponseDto,
   })
-  clientSignup(@Body() clientSignupDto: ClientSignupDto) {
-    return this.authService.clientSignup(clientSignupDto);
+  clientSignup(
+    @Body() clientSignupDto: ClientSignupDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    return this.authService.clientSignup(clientSignupDto, res);
   }
 
   @Post('signin')

@@ -17,10 +17,5 @@ export class ClientSignupDto {
   @IsNotEmpty()
   @ApiProperty({ example: '+33601020304' })
   readonly telephone: string;
-  @IsNotEmpty()
-  @ApiProperty({
-    enum: ['CLIENT'],
-    example: 'CLIENT',
-  })
-  readonly role: 'CLIENT';
+
 }
