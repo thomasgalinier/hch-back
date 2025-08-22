@@ -22,7 +22,6 @@ jobs:
           ssh -o StrictHostKeyChecking=no deploy@217.154.117.179 << 'EOF'
             cd /var/www/hch-back/docker
             git checkout main
-            git pull
-            docker compose down -v 
+            git pull 
             docker compose --env-file ../.env -p hch_back_prod up -d --build
           EOF

@@ -25,6 +25,5 @@ jobs:
             cd /var/www/test/hch-back/docker
             git checkout main
             git pull
-            docker compose down -v 
             docker compose --env-file ../.env -p hch_back_test up -d --build
           EOF
