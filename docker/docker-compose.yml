@@ -29,16 +29,21 @@ services:
       DATABASE_URL: ${DATABASE_URL}
       #Migrations: superuser
       ADMIN_DATABASE_URL: ${ADMIN_DATABASE_URL}
-
-
-      SECRET_KEY: ${SECRET_KEY:-change-me-in-prod}
+      
+      SECRET_KEY: ${SECRET_KEY}
       NODE_ENV: ${NODE_ENV:-production}
-      PORT: ${PORT:-3001}
-    ports:
-      - ${PORT:-3001}:${PORT:-3001}
-    command: sh -c "npx prisma migrate deploy && node dist/main.js"
-    networks:
-      - my_network
+    PORT: ${PORT}
+
+  ports:
+    - ${PORT}:${PORT}  # En prod, idéalement derrière un reverse proxy (nginx) et/ou lié à 127.0.0.1
+  command: >
+    sh -c "
+      DATABASE_URL=$ADMIN_DATABASE_URL npx prisma migrate deploy &&
+      node dist/main.js
+    "
+  networks:
+    - my_network
+
 
 volumes:
   postgres_data:
