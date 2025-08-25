@@ -7,6 +7,7 @@ import {
   Param,
   UseGuards,
   Delete,
+  Query,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -30,6 +31,7 @@ import {
 } from './dto/deleteInterventionsRange.dto';
 import { DeleteInterventionResponseDto } from './dto/deleteIntervention.dto';
 import { Roles } from '../common/decorator/role.decorator';
+import { ListUnplannedInterventionsQueryDto } from './dto/listUnplannedInterventions.dto';
 
 @ApiTags('intervention')
 @Controller('intervention')
@@ -108,7 +110,7 @@ export class InterventionController {
    * Met à jour une intervention
    */
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles('ADMIN', 'SUPER_ADMIN', 'TECHNICIEN')
+  @Roles('ADMIN', 'SUPER_ADMIN', 'TECHNICIEN', 'CLIENT')
   @Patch(':id')
   @ApiOperation({ summary: 'Mettre à jour une intervention' })
   @ApiParam({ name: 'id', description: "ID de l'intervention" })
@@ -142,5 +144,28 @@ export class InterventionController {
     @Param('id') id: string,
   ): Promise<DeleteInterventionResponseDto> {
     return this.interventionService.deleteInterventionById(id);
+  }
+
+    /**
+   * Liste les interventions UNPLANNED, filtrables par zone et par jour.
+   * - jour: YYYY-MM-DD (Europe/Paris)
+   * - zone_id: ID de la zone
+   */
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('ADMIN', 'SUPER_ADMIN', 'TECHNICIEN', "CLIENT")
+  @Get('unplanned')
+  @ApiOperation({
+    summary:
+      'Lister les interventions non planifiées (UNPLANNED), filtrables par zone et jour',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Liste des interventions UNPLANNED',
+    type: [InterventionResponseDto],
+  })
+  async listUnplanned(
+    @Query() query: ListUnplannedInterventionsQueryDto,
+  ): Promise<InterventionResponseDto[]> {
+    return this.interventionService.findUnplanned(query);
   }
 }

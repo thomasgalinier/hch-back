@@ -3,16 +3,18 @@ import {
   BadRequestException,
   NotFoundException,
 } from '@nestjs/common';
-import { formatInTimeZone } from 'date-fns-tz';
+import { formatInTimeZone, zonedTimeToUtc } from 'date-fns-tz';
 import { PrismaService } from '../prisma/prisma.service';
 import { UpdateInterventionDto } from './dto/updateIntervention.dto';
 import { BulkCreateEmptyInterventionsDto } from './dto/bulkCreateEmptyInterventions.dto';
 import { DeleteInterventionsRangeDto } from './dto/deleteInterventionsRange.dto';
 import { DeleteInterventionResponseDto } from './dto/deleteIntervention.dto';
+import { ListUnplannedInterventionsQueryDto } from './dto/listUnplannedInterventions.dto';
 
 @Injectable()
 export class InterventionService {
-  constructor(private prisma: PrismaService) {}
+
+  constructor(private prisma: PrismaService) { }
 
   /**
    * Récupère toutes les interventions d'un technicien (avec client, zone et forfaits)
@@ -86,13 +88,13 @@ export class InterventionService {
         zone: i.zone,
         forfait_intervention: i.forfait_interventions[0]
           ? {
-              id: i.forfait_interventions[0].id,
-              id_forfait: i.forfait_interventions[0].id_forfait,
-              id_intervention: i.forfait_interventions[0].id_intervention,
-              prix: i.forfait_interventions[0].prix,
-              duree: i.forfait_interventions[0].duree,
-              forfait: i.forfait_interventions[0].forfait,
-            }
+            id: i.forfait_interventions[0].id,
+            id_forfait: i.forfait_interventions[0].id_forfait,
+            id_intervention: i.forfait_interventions[0].id_intervention,
+            prix: i.forfait_interventions[0].prix,
+            duree: i.forfait_interventions[0].duree,
+            forfait: i.forfait_interventions[0].forfait,
+          }
           : null,
         createdAt: fmt(i.createdAt),
         updatedAt: fmt(i.updatedAt),
@@ -322,13 +324,13 @@ export class InterventionService {
       zone: updated.zone,
       forfait_intervention: updated.forfait_interventions[0]
         ? {
-            id: updated.forfait_interventions[0].id,
-            id_forfait: updated.forfait_interventions[0].id_forfait,
-            id_intervention: updated.forfait_interventions[0].id_intervention,
-            prix: updated.forfait_interventions[0].prix,
-            duree: updated.forfait_interventions[0].duree,
-            forfait: updated.forfait_interventions[0].forfait,
-          }
+          id: updated.forfait_interventions[0].id,
+          id_forfait: updated.forfait_interventions[0].id_forfait,
+          id_intervention: updated.forfait_interventions[0].id_intervention,
+          prix: updated.forfait_interventions[0].prix,
+          duree: updated.forfait_interventions[0].duree,
+          forfait: updated.forfait_interventions[0].forfait,
+        }
         : null,
       createdAt: fmt(updated.createdAt),
       updatedAt: fmt(updated.updatedAt),
@@ -410,7 +412,7 @@ export class InterventionService {
       const dayEndLimit = new Date(base);
       dayEndLimit.setHours(heure_fin, minute_fin, 0, 0);
 
-      for (let t = new Date(daySlotStart); t < dayEndLimit; ) {
+      for (let t = new Date(daySlotStart); t < dayEndLimit;) {
         const slotStart = new Date(t);
         const slotEnd = new Date(slotStart);
         slotEnd.setMinutes(slotEnd.getMinutes() + duree_minutes);
@@ -520,4 +522,105 @@ export class InterventionService {
       interventionIds: ids,
     };
   }
+/**
+   * Retourne les interventions UNPLANNED, filtrables par zone et par jour calendaire (Europe/Paris).
+   * - Si 'jour' est fourni, on récupère tout créneau qui chevauche ce jour (overlap).
+   */
+  async findUnplanned(
+    query: ListUnplannedInterventionsQueryDto,
+  ): Promise<any[]> {
+    const { zone_id, jour } = query;
+    const tz = 'Europe/Paris';
+
+    // Construction du filtre de base
+    const where: any = {
+      statut: 'UNPLANNED',
+    };
+
+    if (zone_id) {
+      where.zone_id = zone_id;
+    }
+
+    // Si un jour est fourni (YYYY-MM-DD), on prend tout chevauchement avec ce jour en Europe/Paris.
+    if (jour) {
+      // bornes inclusives du jour en Europe/Paris -> converties en UTC pour la base
+      const startOfDayUtc = zonedTimeToUtc(`${jour}T00:00:00`, tz);
+      const endOfDayUtc = zonedTimeToUtc(`${jour}T23:59:59.999`, tz);
+
+      // On cherche tout créneau qui chevauche [startOfDayUtc, endOfDayUtc]
+      where.debut = { lt: endOfDayUtc };
+      where.fin = { gt: startOfDayUtc };
+    }
+
+    const interventions = await this.prisma.intervention.findMany({
+      where,
+      orderBy: [{ debut: 'asc' }],
+      include: {
+        client: {
+          select: {
+            id: true,
+            nom: true,
+            prenom: true,
+            email: true,
+            telephone: true,
+          },
+        },
+        technicien: {
+          select: {
+            id: true,
+            nom: true,
+            prenom: true,
+            email: true,
+            telephone: true,
+          },
+        },
+        zone: { select: { id: true, nom: true, color: true } },
+        forfait_interventions: {
+          include: {
+            forfait: {
+              select: {
+                id: true,
+                titre: true,
+                prix: true,
+                description: true,
+                duree: true,
+                formatted_duree: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const fmt = (d: Date) =>
+      formatInTimeZone(d, 'Europe/Paris', "yyyy-MM-dd'T'HH:mm:ssXXX");
+
+    return interventions.map((i) => ({
+      id: i.id,
+      debut: fmt(i.debut),
+      fin: fmt(i.fin),
+      adresse: i.adresse,
+      statut: i.statut,
+      client_id: i.client_id,
+      technicien_id: i.technicien_id,
+      zone_id: i.zone_id,
+      detail: i.detail,
+      client: i.client,
+      technicien: i.technicien,
+      zone: i.zone,
+      forfait_intervention: i.forfait_interventions[0]
+        ? {
+            id: i.forfait_interventions[0].id,
+            id_forfait: i.forfait_interventions[0].id_forfait,
+            id_intervention: i.forfait_interventions[0].id_intervention,
+            prix: i.forfait_interventions[0].prix,
+            duree: i.forfait_interventions[0].duree,
+            forfait: i.forfait_interventions[0].forfait,
+          }
+        : null,
+      createdAt: fmt(i.createdAt),
+      updatedAt: fmt(i.updatedAt),
+    }));
+  }
+
 }
