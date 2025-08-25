@@ -146,13 +146,17 @@ export class InterventionController {
     return this.interventionService.deleteInterventionById(id);
   }
 
+
   /**
+
    * Liste les interventions UNPLANNED, filtrables par zone et par jour.
    * - jour: YYYY-MM-DD (Europe/Paris)
    * - zone_id: ID de la zone
    */
   @UseGuards(AuthGuard('jwt'), RolesGuard)
+
   @Roles('ADMIN', 'SUPER_ADMIN', 'TECHNICIEN', 'CLIENT')
+
   @Get('unplanned')
   @ApiOperation({
     summary:
