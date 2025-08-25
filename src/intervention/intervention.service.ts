@@ -522,7 +522,8 @@ export class InterventionService {
       interventionIds: ids,
     };
   }
-/**
+
+  /**
    * Retourne les interventions UNPLANNED, filtrables par zone et par jour calendaire (Europe/Paris).
    * - Si 'jour' est fourni, on récupère tout créneau qui chevauche ce jour (overlap).
    */
@@ -622,5 +623,4 @@ export class InterventionService {
       updatedAt: fmt(i.updatedAt),
     }));
   }
-
 }

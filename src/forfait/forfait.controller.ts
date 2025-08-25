@@ -88,23 +88,26 @@ export class ForfaitController {
   @ApiForbiddenResponse({
     description: 'Droits insuffisants (ADMIN ou SUPER_ADMIN requis)',
   })
-@UseGuards(AuthGuard('jwt'), RolesGuard)
-@Roles('ADMIN', 'SUPER_ADMIN', 'CLIENT', 'CLIENT')
-@Get('/')
-@ApiOperation({
-  summary: 'Récupérer tous les forfaits',
-  description:
-    'Récupère la liste de tous les forfaits disponibles. Filtrage possible par titre via le query param ?titre=...',
-})
-@ApiQuery({
-  name: 'titre',
-  required: false,
-  description: 'Filtrer les forfaits dont le titre contient cette valeur (insensible à la casse)',
-  example: 'Premium',
-})
-getForfait(@Query('titre') titre?: string) {
-  return this.forfaitService.getForfait(titre);
-}
+
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('ADMIN', 'SUPER_ADMIN', 'CLIENT', 'CLIENT')
+  @Get('/')
+  @ApiOperation({
+    summary: 'Récupérer tous les forfaits',
+    description:
+      'Récupère la liste de tous les forfaits disponibles. Filtrage possible par titre via le query param ?titre=...',
+  })
+  @ApiQuery({
+    name: 'titre',
+    required: false,
+    description:
+      'Filtrer les forfaits dont le titre contient cette valeur (insensible à la casse)',
+    example: 'Premium',
+  })
+  getForfait(@Query('titre') titre?: string) {
+    return this.forfaitService.getForfait(titre);
+  }
+
 
   @ApiOperation({
     summary: 'Créer un nouveau forfait',

@@ -46,14 +46,14 @@ export class SuperAdminBootstrapService implements OnModuleInit {
 
       // Hash du mot de passe (10 rounds par défaut)
       const hash = await bcrypt.hash(password, 10);
-    const admin = await this.prisma.utilisateur.create({
+      const admin = await this.prisma.utilisateur.create({
         data: {
           email,
           password: hash,
           nom,
           prenom,
           telephone,
-      role: 'SUPER_ADMIN',
+          role: 'SUPER_ADMIN',
         },
         select: { id: true, email: true },
       });

@@ -7,10 +7,16 @@ import { convertirEnMillisecondes } from '../utils/duree.util';
 @Injectable()
 export class ForfaitService {
   constructor(private readonly prismaService: PrismaService) {}
-  getForfait(titre?:string) {
+
+  getForfait(titre?: string) {
     const value = titre?.trim();
 
-    return this.prismaService.forfait.findMany({where: value ? {titre: {contains: value, mode: 'insensitive'}} : undefined});
+    return this.prismaService.forfait.findMany({
+      where: value
+        ? { titre: { contains: value, mode: 'insensitive' } }
+        : undefined,
+    });
+
   }
 
   createForfait(createForfaitDto: CreateForfaitDto) {
