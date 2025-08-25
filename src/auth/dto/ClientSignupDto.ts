@@ -17,5 +17,4 @@ export class ClientSignupDto {
   @IsNotEmpty()
   @ApiProperty({ example: '+33601020304' })
   readonly telephone: string;
-
 }

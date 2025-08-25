@@ -13,8 +13,7 @@ import { ListUnplannedInterventionsQueryDto } from './dto/listUnplannedIntervent
 
 @Injectable()
 export class InterventionService {
-
-  constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService) {}
 
   /**
    * Récupère toutes les interventions d'un technicien (avec client, zone et forfaits)
@@ -88,13 +87,13 @@ export class InterventionService {
         zone: i.zone,
         forfait_intervention: i.forfait_interventions[0]
           ? {
-            id: i.forfait_interventions[0].id,
-            id_forfait: i.forfait_interventions[0].id_forfait,
-            id_intervention: i.forfait_interventions[0].id_intervention,
-            prix: i.forfait_interventions[0].prix,
-            duree: i.forfait_interventions[0].duree,
-            forfait: i.forfait_interventions[0].forfait,
-          }
+              id: i.forfait_interventions[0].id,
+              id_forfait: i.forfait_interventions[0].id_forfait,
+              id_intervention: i.forfait_interventions[0].id_intervention,
+              prix: i.forfait_interventions[0].prix,
+              duree: i.forfait_interventions[0].duree,
+              forfait: i.forfait_interventions[0].forfait,
+            }
           : null,
         createdAt: fmt(i.createdAt),
         updatedAt: fmt(i.updatedAt),
@@ -324,13 +323,13 @@ export class InterventionService {
       zone: updated.zone,
       forfait_intervention: updated.forfait_interventions[0]
         ? {
-          id: updated.forfait_interventions[0].id,
-          id_forfait: updated.forfait_interventions[0].id_forfait,
-          id_intervention: updated.forfait_interventions[0].id_intervention,
-          prix: updated.forfait_interventions[0].prix,
-          duree: updated.forfait_interventions[0].duree,
-          forfait: updated.forfait_interventions[0].forfait,
-        }
+            id: updated.forfait_interventions[0].id,
+            id_forfait: updated.forfait_interventions[0].id_forfait,
+            id_intervention: updated.forfait_interventions[0].id_intervention,
+            prix: updated.forfait_interventions[0].prix,
+            duree: updated.forfait_interventions[0].duree,
+            forfait: updated.forfait_interventions[0].forfait,
+          }
         : null,
       createdAt: fmt(updated.createdAt),
       updatedAt: fmt(updated.updatedAt),
@@ -412,7 +411,7 @@ export class InterventionService {
       const dayEndLimit = new Date(base);
       dayEndLimit.setHours(heure_fin, minute_fin, 0, 0);
 
-      for (let t = new Date(daySlotStart); t < dayEndLimit;) {
+      for (let t = new Date(daySlotStart); t < dayEndLimit; ) {
         const slotStart = new Date(t);
         const slotEnd = new Date(slotStart);
         slotEnd.setMinutes(slotEnd.getMinutes() + duree_minutes);
@@ -522,7 +521,7 @@ export class InterventionService {
       interventionIds: ids,
     };
   }
-/**
+  /**
    * Retourne les interventions UNPLANNED, filtrables par zone et par jour calendaire (Europe/Paris).
    * - Si 'jour' est fourni, on récupère tout créneau qui chevauche ce jour (overlap).
    */
@@ -622,5 +621,4 @@ export class InterventionService {
       updatedAt: fmt(i.updatedAt),
     }));
   }
-
 }

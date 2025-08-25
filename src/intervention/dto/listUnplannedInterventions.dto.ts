@@ -12,7 +12,7 @@ export class ListUnplannedInterventionsQueryDto {
 
   @ApiPropertyOptional({
     description:
-      "Jour calendaire au format ISO (YYYY-MM-DD) en Europe/Paris. Si omis, retourne toutes les UNPLANNED.",
+      'Jour calendaire au format ISO (YYYY-MM-DD) en Europe/Paris. Si omis, retourne toutes les UNPLANNED.',
     example: '2025-08-24',
   })
   @IsOptional()
