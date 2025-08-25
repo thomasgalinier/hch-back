@@ -38,8 +38,8 @@ import { UpdateZoneDto } from './dto/update-zone.dto';
 @Controller('carte')
 export class CarteController {
   constructor(private readonly carteService: CarteService) {}
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles('ADMIN', 'SUPER_ADMIN')
+  // @UseGuards(AuthGuard('jwt'), RolesGuard)
+  // @Roles('ADMIN', 'SUPER_ADMIN')
   @Get('/')
   @ApiOperation({
     summary: 'Lister les zones',
