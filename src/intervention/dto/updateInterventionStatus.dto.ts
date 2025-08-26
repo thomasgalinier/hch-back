@@ -1,4 +1,4 @@
-import { IsString, IsIn } from 'class-validator';
+import { IsString, IsIn, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateInterventionStatusDto {
@@ -15,6 +15,7 @@ export class UpdateInterventionStatusDto {
     example: 'Intervention démarrée - technicien arrivé sur site',
     required: false,
   })
+  @IsOptional()
   @IsString()
-  commentaire?: string;
+  detail?: string;
 }

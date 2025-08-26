@@ -8,6 +8,7 @@ import { SuperAdminBootstrapService } from './bootstrap/super-admin.bootstrap'; 
 import { ForfaitModule } from './forfait/forfait.module';
 import { TestModule } from './test/test.module';
 import { InterventionModule } from './intervention/intervention.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { InterventionModule } from './intervention/intervention.module';
     ForfaitModule,
     TestModule,
     InterventionModule,
+    ScheduleModule.forRoot(),
   ],
   controllers: [],
   providers: [ForfaitService, SuperAdminBootstrapService],

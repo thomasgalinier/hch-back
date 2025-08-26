@@ -17,9 +17,9 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-  "test:e2e": "jest --config ./test/jest-e2e.json",
-  "swagger:gen": "ts-node src/swagger.ts",
-  "swagger:gen:carte": "ts-node src/swagger.ts carte openapi-carte.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "swagger:gen": "ts-node src/swagger.ts",
+    "swagger:gen:carte": "ts-node src/swagger.ts carte openapi-carte.json"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
@@ -28,6 +28,7 @@
     "@nestjs/jwt": "^10.2.0",
     "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-express": "^10.4.15",
+    "@nestjs/schedule": "^6.0.0",
     "@nestjs/swagger": "^7.4.2",
     "@prisma/client": "^6.1.0",
     "bcrypt": "^5.1.1",
