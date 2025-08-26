@@ -16,7 +16,6 @@ export class ForfaitService {
         ? { titre: { contains: value, mode: 'insensitive' } }
         : undefined,
     });
-
   }
 
   createForfait(createForfaitDto: CreateForfaitDto) {

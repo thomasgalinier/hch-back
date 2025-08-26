@@ -88,7 +88,6 @@ export class ForfaitController {
   @ApiForbiddenResponse({
     description: 'Droits insuffisants (ADMIN ou SUPER_ADMIN requis)',
   })
-
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('ADMIN', 'SUPER_ADMIN', 'CLIENT', 'CLIENT')
   @Get('/')
@@ -107,7 +106,6 @@ export class ForfaitController {
   getForfait(@Query('titre') titre?: string) {
     return this.forfaitService.getForfait(titre);
   }
-
 
   @ApiOperation({
     summary: 'Créer un nouveau forfait',

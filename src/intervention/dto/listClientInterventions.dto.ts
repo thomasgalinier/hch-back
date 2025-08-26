@@ -4,7 +4,12 @@ import { Type } from 'class-transformer';
 import { InterventionResponseDto } from './response.dto';
 
 export class ListClientInterventionsQueryDto {
-  @ApiPropertyOptional({ description: 'Numéro de page', default: 1, minimum: 1 })
+  @ApiPropertyOptional({
+    description: 'Numéro de page',
+    default: 1,
+    minimum: 1,
+  })
+
   @IsOptional()
   @Type(() => Number)
   @IsInt()
@@ -40,7 +45,7 @@ export class PaginatedInterventionsMetaDto {
 }
 
 export class PaginatedInterventionsResponseDto {
-  
+
   data!: InterventionResponseDto[];
 
   meta!: PaginatedInterventionsMetaDto;
