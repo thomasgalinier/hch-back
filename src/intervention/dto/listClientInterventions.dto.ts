@@ -9,6 +9,7 @@ export class ListClientInterventionsQueryDto {
     default: 1,
     minimum: 1,
   })
+
   @IsOptional()
   @Type(() => Number)
   @IsInt()
@@ -44,6 +45,7 @@ export class PaginatedInterventionsMetaDto {
 }
 
 export class PaginatedInterventionsResponseDto {
+
   data!: InterventionResponseDto[];
 
   meta!: PaginatedInterventionsMetaDto;

@@ -15,6 +15,7 @@ import { ListClientInterventionsQueryDto } from './dto/listClientInterventions.d
 
 @Injectable()
 export class InterventionService {
+
   constructor(private prisma: PrismaService) {}
 
   /**
@@ -624,6 +625,7 @@ export class InterventionService {
       updatedAt: fmt(i.updatedAt),
     }));
   }
+
   async findPlanned(
     query: ListPlannedInterventionsQueryDto,
   ): Promise<
@@ -864,4 +866,5 @@ export class InterventionService {
       },
     };
   }
+}
 }

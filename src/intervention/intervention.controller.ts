@@ -39,7 +39,6 @@ import {
   ListClientInterventionsQueryDto,
   PaginatedInterventionsResponseDto,
 } from './dto/listClientInterventions.dto';
-import { UserType } from 'schema';
 
 @ApiTags('intervention')
 @Controller('intervention')
@@ -235,4 +234,5 @@ export class InterventionController {
     }
     return this.interventionService.findByClientPaginated(clientId, query);
   }
+
 }

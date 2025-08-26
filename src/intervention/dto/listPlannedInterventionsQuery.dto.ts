@@ -28,3 +28,4 @@ export class ListPlannedInterventionsQueryDto {
   @IsString()
   technicien_id?: string;
 }
+
