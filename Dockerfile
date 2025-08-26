@@ -1,27 +1,45 @@
 # === BUILD STAGE ===
-FROM node:20-alpine as build
+FROM node:20-alpine AS build
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm install
+# Déps système nécessaires à Prisma sur Alpine
+RUN apk add --no-cache libc6-compat openssl
 
+# Installer deps
+COPY package*.json ./
+RUN npm ci
+
+# Copier le code
 COPY . .
 
-# Génère Prisma Client avant la compilation Nest (tsc n'a pas besoin de prisma/seed.ts)
+# Générer Prisma Client avant build TS
 RUN npx prisma generate
+
+# Compiler (assure-toi que tsconfig "outDir" = "dist")
 RUN npm run build
 
-# === FINAL STAGE ===
-FROM node:18-alpine
+# === RUNTIME STAGE ===
+FROM node:20-alpine AS runtime
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm install --only=production
+# Déps système nécessaires à Prisma
+RUN apk add --no-cache libc6-compat openssl
 
-COPY --from=build /app/dist ./dist
+ENV NODE_ENV=production
+
+# Copier juste ce qui est nécessaire
+COPY package*.json ./
+RUN npm ci --omit=dev
+
+# Prisma client et binaires (si générés côté build)
 COPY --from=build /app/node_modules/@prisma ./node_modules/@prisma
 COPY --from=build /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=build /app/node_modules/@prisma/client ./node_modules/@prisma/client
+
+# Code compilé + schémas
+COPY --from=build /app/dist ./dist
 COPY --from=build /app/prisma ./prisma
 
-CMD ["node", "dist/main.js"]
+# (Optionnel) Migrer au démarrage puis lancer l'app
+# CMD ["sh", "-lc", "npx prisma migrate deploy && node dist/main.js"]
+CMD ["node", "dist/src/main.js"]
