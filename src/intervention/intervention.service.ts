@@ -867,4 +867,3 @@ export class InterventionService {
     };
   }
 }
-}
