@@ -4,7 +4,6 @@ import { IsISO8601, IsOptional, IsString } from 'class-validator';
 export class ListPlannedInterventionsQueryDto {
   @ApiPropertyOptional({
     description:
-
       'Jour calendaire au format ISO (YYYY-MM-DD) en Europe/Paris. Si omis, retourne toutes les UNPLANNED.',
 
     example: '2025-08-24',
