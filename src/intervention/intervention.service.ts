@@ -12,6 +12,7 @@ import { DeleteInterventionResponseDto } from './dto/deleteIntervention.dto';
 import { ListUnplannedInterventionsQueryDto } from './dto/listUnplannedInterventions.dto';
 import { ListPlannedInterventionsQueryDto } from './dto/listPlannedInterventionsQuery.dto';
 import { ListClientInterventionsQueryDto } from './dto/listClientInterventions.dto';
+import { InterventionResponseDto } from './dto/response.dto';
 
 @Injectable()
 export class InterventionService {
@@ -629,7 +630,7 @@ export class InterventionService {
   async findPlanned(
     query: ListPlannedInterventionsQueryDto,
   ): Promise<
-    import('/Users/thomasgalinier/Documents/hch/hch-back/src/intervention/dto/response.dto').InterventionResponseDto[]
+    InterventionResponseDto[]
   > {
     const { zone_id, jour, technicien_id } = query;
 
