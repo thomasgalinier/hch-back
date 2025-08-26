@@ -10,9 +10,15 @@ import { BulkCreateEmptyInterventionsDto } from './dto/bulkCreateEmptyInterventi
 import { DeleteInterventionsRangeDto } from './dto/deleteInterventionsRange.dto';
 import { DeleteInterventionResponseDto } from './dto/deleteIntervention.dto';
 import { ListUnplannedInterventionsQueryDto } from './dto/listUnplannedInterventions.dto';
+import { ListPlannedInterventionsQueryDto } from './dto/listPlannedInterventionsQuery.dto';
+import { ListClientInterventionsQueryDto } from './dto/listClientInterventions.dto';
 
 @Injectable()
 export class InterventionService {
+
+
+
+
 
   constructor(private prisma: PrismaService) { }
 
@@ -623,4 +629,240 @@ export class InterventionService {
       updatedAt: fmt(i.updatedAt),
     }));
   }
+  async findPlanned(query: ListPlannedInterventionsQueryDto): Promise<import("/Users/thomasgalinier/Documents/hch/hch-back/src/intervention/dto/response.dto").InterventionResponseDto[]> {
+        const { zone_id, jour, technicien_id } = query;
+        
+    const tz = 'Europe/Paris';
+
+    // Construction du filtre de base
+    const where: any = {
+      NOT: { statut: 'UNPLANNED' },
+    };
+    if (technicien_id) {
+      where.technicien_id = technicien_id;
+    }
+    if (zone_id) {
+      where.zone_id = zone_id;
+    }
+
+    // Si un jour est fourni (YYYY-MM-DD), on prend tout chevauchement avec ce jour en Europe/Paris.
+    if (jour) {
+      // bornes inclusives du jour en Europe/Paris -> converties en UTC pour la base
+      const startOfDayUtc = zonedTimeToUtc(`${jour}T00:00:00`, tz);
+      const endOfDayUtc = zonedTimeToUtc(`${jour}T23:59:59.999`, tz);
+
+      // On cherche tout créneau qui chevauche [startOfDayUtc, endOfDayUtc]
+      where.debut = { lt: endOfDayUtc };
+      where.fin = { gt: startOfDayUtc };
+    }
+
+    const interventions = await this.prisma.intervention.findMany({
+      where,
+      orderBy: [{ debut: 'asc' }],
+      include: {
+        client: {
+          select: {
+            id: true,
+            nom: true,
+            prenom: true,
+            email: true,
+            telephone: true,
+          },
+        },
+        technicien: {
+          select: {
+            id: true,
+            nom: true,
+            prenom: true,
+            email: true,
+            telephone: true,
+          },
+        },
+        zone: { select: { id: true, nom: true, color: true } },
+        forfait_interventions: {
+          include: {
+            forfait: {
+              select: {
+                id: true,
+                titre: true,
+                prix: true,
+                description: true,
+                duree: true,
+                formatted_duree: true,
+                categorie_velo: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const fmt = (d: Date) =>
+      formatInTimeZone(d, 'Europe/Paris', "yyyy-MM-dd'T'HH:mm:ssXXX");
+
+    return interventions.map((i) => ({
+      id: i.id,
+      debut: fmt(i.debut),
+      fin: fmt(i.fin),
+      adresse: i.adresse,
+      statut: i.statut,
+      client_id: i.client_id,
+      technicien_id: i.technicien_id,
+      zone_id: i.zone_id,
+      detail: i.detail,
+      client: i.client,
+      technicien: i.technicien,
+      zone: i.zone,
+      forfait_intervention: i.forfait_interventions[0]
+        ? {
+            id: i.forfait_interventions[0].id,
+            id_forfait: i.forfait_interventions[0].id_forfait,
+            id_intervention: i.forfait_interventions[0].id_intervention,
+            prix: i.forfait_interventions[0].prix,
+            duree: i.forfait_interventions[0].duree,
+            forfait: i.forfait_interventions[0].forfait,
+          }
+        : null,
+      createdAt: fmt(i.createdAt),
+      updatedAt: fmt(i.updatedAt),
+    }));
+  }
+  async autoStartPlannedNow() {
+  const now = new Date();
+
+  const plannedNow = await this.prisma.intervention.findMany({
+    where: {
+      statut: 'PLANNED',
+      debut: { lte: now },
+      fin: { gt: now },
+    },
+    select: { id: true },
+  });
+
+  if (plannedNow.length === 0) {
+    return { updatedCount: 0, interventionIds: [] };
+  }
+
+  const ids = plannedNow.map((i) => i.id);
+
+  const { count } = await this.prisma.intervention.updateMany({
+    where: { id: { in: ids } },
+    data: { statut: 'IN_PROGRESS' },
+  });
+
+  return { updatedCount: count, interventionIds: ids };
+}
+
+/**
+ * Liste paginée des interventions d'un client, triées du plus récent au plus ancien.
+ */
+async findByClientPaginated(
+  client_id: string,
+  query: ListClientInterventionsQueryDto,
+): Promise<{
+  data: any[]; // idéalement InterventionResponseDto[]
+  meta: { page: number; limit: number; total: number; totalPages: number };
+}> {
+  // Vérifier l'existence du client
+  const client = await this.prisma.utilisateur.findFirst({
+    where: { id: client_id, role: 'CLIENT' },
+    select: { id: true },
+  });
+  if (!client) {
+    throw new NotFoundException('Client introuvable');
+  }
+
+  const page = Math.max(1, query.page ?? 1);
+  const limit = Math.max(1, Math.min(100, query.limit ?? 10));
+  const skip = (page - 1) * limit;
+
+  // Compter le total pour la pagination
+  const [total, interventions] = await this.prisma.$transaction([
+    this.prisma.intervention.count({ where: { client_id } }),
+    this.prisma.intervention.findMany({
+      where: { client_id },
+      orderBy: { debut: 'desc' }, // plus récent -> plus ancien
+      skip,
+      take: limit,
+      include: {
+        client: {
+          select: {
+            id: true,
+            nom: true,
+            prenom: true,
+            email: true,
+            telephone: true,
+          },
+        },
+        technicien: {
+          select: {
+            id: true,
+            nom: true,
+            prenom: true,
+            email: true,
+            telephone: true,
+          },
+        },
+        zone: { select: { id: true, nom: true, color: true } },
+        forfait_interventions: {
+          include: {
+            forfait: {
+              select: {
+                id: true,
+                titre: true,
+                prix: true,
+                description: true,
+                duree: true,
+                formatted_duree: true,
+                // si besoin: categorie_velo
+              },
+            },
+          },
+        },
+      },
+    }),
+  ]);
+
+  const fmt = (d: Date) =>
+    formatInTimeZone(d, 'Europe/Paris', "yyyy-MM-dd'T'HH:mm:ssXXX");
+
+  const data = interventions.map((i) => ({
+    id: i.id,
+    debut: fmt(i.debut),
+    fin: fmt(i.fin),
+    adresse: i.adresse,
+    statut: i.statut,
+    client_id: i.client_id,
+    technicien_id: i.technicien_id,
+    zone_id: i.zone_id,
+    detail: i.detail,
+    client: i.client,
+    technicien: i.technicien,
+    zone: i.zone,
+    forfait_intervention: i.forfait_interventions[0]
+      ? {
+          id: i.forfait_interventions[0].id,
+          id_forfait: i.forfait_interventions[0].id_forfait,
+          id_intervention: i.forfait_interventions[0].id_intervention,
+          prix: i.forfait_interventions[0].prix,
+          duree: i.forfait_interventions[0].duree,
+          forfait: i.forfait_interventions[0].forfait,
+        }
+      : null,
+    createdAt: fmt(i.createdAt),
+    updatedAt: fmt(i.updatedAt),
+  }));
+
+  const totalPages = Math.max(1, Math.ceil(total / limit));
+
+  return {
+    data,
+    meta: {
+      page,
+      limit,
+      total,
+      totalPages,
+    },
+  };
+}
 }

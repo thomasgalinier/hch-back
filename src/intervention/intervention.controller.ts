@@ -8,6 +8,8 @@ import {
   UseGuards,
   Delete,
   Query,
+  Req,
+  ForbiddenException,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -32,6 +34,9 @@ import {
 import { DeleteInterventionResponseDto } from './dto/deleteIntervention.dto';
 import { Roles } from '../common/decorator/role.decorator';
 import { ListUnplannedInterventionsQueryDto } from './dto/listUnplannedInterventions.dto';
+import { ListPlannedInterventionsQueryDto } from './dto/listPlannedInterventionsQuery.dto';
+import { ListClientInterventionsQueryDto, PaginatedInterventionsResponseDto } from './dto/listClientInterventions.dto';
+import { UserType } from 'schema';
 
 @ApiTags('intervention')
 @Controller('intervention')
@@ -172,4 +177,56 @@ export class InterventionController {
   ): Promise<InterventionResponseDto[]> {
     return this.interventionService.findUnplanned(query);
   }
+
+  /**
+   * Liste les interventions planifiées par jour et par zone ou par technicien.
+   * - jour: YYYY-MM-DD (Europe/Paris)
+   * - zone_id: ID de la zone
+   * - technicien_id: ID du technicien
+   */
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('ADMIN', 'SUPER_ADMIN', 'TECHNICIEN', 'CLIENT')
+  @Get('planned')
+  @ApiOperation({
+    summary: 'Lister les interventions planifiées, filtrables par jour et zone ou technicien',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Liste des interventions planifiées',
+    type: [InterventionResponseDto],
+  })
+  async listPlanned(
+    @Query() query: ListPlannedInterventionsQueryDto,
+  ): Promise<InterventionResponseDto[]> {
+    return this.interventionService.findPlanned(query);
+  }
+
+  /**
+ * Liste paginée des interventions d'un client,
+ * triées de la plus récente à la plus ancienne.
+ */
+@UseGuards(AuthGuard('jwt'), RolesGuard)
+@Roles('ADMIN', 'SUPER_ADMIN', 'TECHNICIEN', 'CLIENT')
+@Get('client/:id')
+@ApiOperation({
+  summary: "Lister les interventions d'un client (paginé, tri desc par date début)",
+})
+@ApiParam({ name: 'id', description: 'ID du client' })
+@ApiResponse({
+  status: 200,
+  description: 'Liste paginée des interventions du client',
+  type: PaginatedInterventionsResponseDto,
+})
+async listByClient(
+  @Param('id') clientId: string,
+  @Query() query: ListClientInterventionsQueryDto,
+  @Req() req: Request & { user?: UserType },
+): Promise<{ data: InterventionResponseDto[]; meta: { page: number; limit: number; total: number; totalPages: number } }> {
+  const user = req.user;
+  if (user.role === 'CLIENT' && user.id !== clientId) {
+    throw new ForbiddenException("Un client ne peut pas accéder aux interventions d'un autre client.");
+  }
+  return this.interventionService.findByClientPaginated(clientId, query);
+}
+
 }
